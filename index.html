@@ -1,50 +1,20 @@
-```html
 <!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#121316">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Katalog panenek & Sběratelská karta</title>
-
-  <!-- Google Fonts & Tailwind CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Katalog panenek & Servisní deník</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Montserrat', 'sans-serif'],
-            vintageHeader: ['Cinzel', 'serif'],
-            vintageScript: ['"Great Vibes"', 'cursive'],
-            cardHeader: ['Oswald', 'sans-serif'],
-          },
-          colors: {
-            cardBg: '#fbf5eb',
-            cardBorder: '#80182a',
-            cardRed: '#80182a',
-            cardBoxBg: '#f7ebe1',
-            cardBoxBorder: '#80182a',
-          }
-        }
-      }
-    }
-  </script>
-
+  
   <style>
-    /* Absolute rule: no truncation or abbreviations anywhere */
     * {
-      text-overflow: clip !important;
-      overflow-wrap: break-word !important;
-      word-break: break-word !important;
-      white-space: normal !important;
       -webkit-tap-highlight-color: transparent;
+      white-space: normal !important;
+      word-break: break-word !important;
     }
     body {
       background-color: #121316;
@@ -54,29 +24,20 @@
     .collector-card {
       background-color: #fbf5eb;
       color: #2b1f1d;
-      border: 3.5px solid #80182a;
-      box-shadow: 0 16px 36px -8px rgba(128, 24, 42, 0.45);
+      border: 3px solid #80182a;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    }
+    .card-title-font {
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: 0.05em;
+    }
+    .card-signature-font {
+      font-family: 'Great Vibes', cursive;
     }
     .card-box {
       background: #f7ebe1;
       border: 1.5px solid #80182a;
-      border-radius: 14px;
-    }
-    .body-part-zone {
-      fill: rgba(147, 51, 234, 0.22);
-      stroke: #a855f7;
-      stroke-width: 1.5;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .body-part-zone:hover, .body-part-zone.active {
-      fill: rgba(244, 63, 94, 0.6) !important;
-      stroke: #80182a !important;
-      stroke-width: 2.5;
-    }
-    .body-part-zone.has-repairs {
-      fill: rgba(239, 68, 68, 0.5);
-      stroke: #dc2626;
+      border-radius: 12px;
     }
     .photo-display-frame {
       position: relative;
@@ -91,7 +52,6 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.3s ease;
     }
     .polish-glaze-layer {
       position: absolute;
@@ -108,10 +68,33 @@
       background: radial-gradient(circle at 35% 25%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 65%);
       mix-blend-mode: screen;
     }
-    @media print {
-      body * { visibility: hidden; }
-      #collectorCardContainer, #collectorCardContainer * { visibility: visible; }
-      #collectorCardContainer { position: absolute; left: 0; top: 0; width: 100%; }
+    .body-part-zone {
+      fill: rgba(147, 51, 234, 0.22);
+      stroke: #a855f7;
+      stroke-width: 1.5;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .body-part-zone:hover, .body-part-zone:active {
+      fill: rgba(236, 72, 153, 0.55);
+      stroke: #ec4899;
+    }
+    .body-part-zone.has-repairs {
+      fill: rgba(239, 68, 68, 0.45);
+      stroke: #ef4444;
+    }
+    .toast-popup {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
   </style>
 </head>
@@ -124,22 +107,17 @@
       </button>
       <div class="flex items-center space-x-2">
         <span class="text-xl">✨</span>
-        <h1 id="headerTitle" class="font-bold text-base sm:text-lg text-white tracking-wide">Katalog panenek</h1>
+        <h1 id="headerTitle" class="font-bold text-lg text-white tracking-wide">Katalog panenek</h1>
       </div>
     </div>
     <div class="flex items-center space-x-2">
-      <button id="btnPwaInstall" class="hidden text-xs bg-purple-600 hover:bg-purple-700 text-white font-medium py-1.5 px-3 rounded-full shadow-lg transition">
-        Na plochu
-      </button>
       <button onclick="openExportModal()" class="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition" title="Záloha dat">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
       </button>
     </div>
   </header>
 
-  <main class="max-w-md mx-auto px-4 py-4 space-y-4">
-    
-    <!-- POHLED 1: SEZNAM PANENEK -->
+  <main class="max-w-md mx-auto px-4 py-5">
     <div id="viewList" class="space-y-4">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold text-gray-200">Moje sbírka</h2>
@@ -148,275 +126,20 @@
           <span>Přidat panenku</span>
         </button>
       </div>
-
-      <div class="relative">
-        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        </span>
-        <input type="text" id="searchDollInput" oninput="filterDollList()" placeholder="Hledat panenku podle jména, povolání, národnosti..." class="w-full pl-9 pr-4 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-600">
-      </div>
-
       <div id="dollsGrid" class="space-y-3 pt-1"></div>
     </div>
 
-    <!-- POHLED 2: DETAIL PANENKY -->
-    <div id="viewDetail" class="hidden space-y-4">
-      
-      <!-- Volič zobrazení -->
+    <div id="viewDetail" class="hidden space-y-6">
       <div class="flex p-1 bg-gray-900 rounded-xl border border-gray-800">
-        <button id="tabBtnCard" onclick="switchDetailTab('card')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white transition">
-          ⭐ Sběratelská Profilová Karta
-        </button>
         <button id="tabBtnEdit" onclick="switchDetailTab('edit')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition">
-          🛠️ Správa & Úpravy
+          Správa & Úpravy
+        </button>
+        <button id="tabBtnCard" onclick="switchDetailTab('card')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white transition">
+          Sběratelská Profilová Karta
         </button>
       </div>
 
-      <!-- OBSAH: SBĚRATELSKÁ PROFILOVÁ KARTA -->
-      <div id="subviewCard" class="space-y-4">
-        <div class="flex justify-end gap-2">
-          <button onclick="window.print()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 flex items-center space-x-1">
-            <span>🖨 Tisknout kartu</span>
-          </button>
-          <button onclick="switchDetailTab('edit')" class="text-xs bg-purple-950/80 hover:bg-purple-900 text-purple-300 px-3 py-1.5 rounded-lg border border-purple-800 flex items-center space-x-1">
-            <span>✏️ Upravit hodnoty</span>
-          </button>
-        </div>
-
-        <div id="collectorCardContainer" class="collector-card p-4 sm:p-5 rounded-3xl relative">
-          
-          <!-- HORNÍ LIŠTA -->
-          <div class="flex items-center justify-between border-b-2 border-[#80182a] pb-2 text-[#80182a]">
-            <span class="text-xl">★</span>
-            <div class="text-center">
-              <h2 id="cardHeaderName" class="card-title-font text-lg sm:text-2xl font-bold uppercase tracking-wider leading-none">
-                PROFILOVÁ KARTA - PANENKA
-              </h2>
-              <span class="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase block mt-0.5 opacity-90">
-                OSOBNÍ ZÁZNAM - NEPRODEJNÉ, POUZE PRO REFERENCI
-              </span>
-            </div>
-            <span class="text-xl">★</span>
-          </div>
-
-          <!-- HLAVNÍ SEKCE: OBLIČEJ + IDENTITA & BIOGRAFIE + POSTAVA -->
-          <div class="grid grid-cols-12 gap-3 mt-3 items-stretch">
-            
-            <div class="col-span-5 relative">
-              <div class="w-full aspect-[3/4] bg-neutral-900 rounded-2xl overflow-hidden border-2 border-[#80182a] shadow-inner">
-                <img id="cardFacePhoto" class="w-full h-full object-cover hidden" alt="Tvář">
-                <div id="cardFacePlaceholder" class="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-neutral-800 p-2 text-center">
-                  <span class="text-3xl mb-1">👩</span>
-                  <span class="text-[10px] text-gray-400 font-bold uppercase">Fotka tváře</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-span-7 flex flex-col justify-between py-0.5">
-              <div>
-                <div id="cardSignatureName" class="card-signature-font text-3xl sm:text-4xl text-[#80182a] leading-none mb-1">Panenka</div>
-                <div id="cardBlockName" class="card-title-font text-xl sm:text-2xl font-black text-neutral-900 uppercase leading-tight mb-1.5">PANENKA</div>
-
-                <div class="space-y-1 text-[11px] text-neutral-800">
-                  <div>👤 <strong class="text-neutral-900">PŘEZDÍVKA:</strong> <span id="cardValNickname" class="font-semibold text-[#80182a]">Nezadáno</span></div>
-                  <div>💼 <strong class="text-neutral-900">POVOLÁNÍ:</strong> <span id="cardValProfession" class="font-semibold text-neutral-900">Modelka</span></div>
-                  <div>🎯 <strong class="text-neutral-900">SPECIALIZACE:</strong> <span id="cardValSpecialization" class="font-semibold text-neutral-900">Módní přehlídky & editorial</span></div>
-                  <div>🌍 <strong class="text-neutral-900">NÁRODNOST:</strong> <span id="cardValNationality" class="font-semibold text-neutral-900">Česká</span></div>
-                  <div>📅 <strong class="text-neutral-900">NAROZENÍ:</strong> <span id="cardValBirthDatePlace" class="font-semibold text-neutral-900">19. 7. 1998, Praha</span></div>
-                </div>
-              </div>
-
-              <!-- Náhled celé postavy -->
-              <div class="mt-2 pt-1 border-t border-[#80182a]/30 flex items-center gap-2">
-                <div class="w-12 h-14 rounded-lg overflow-hidden border border-[#80182a] bg-neutral-900 shrink-0">
-                  <img id="cardBodyPhotoPreview" src="" alt="Celé tělo" class="w-full h-full object-cover">
-                </div>
-                <div class="text-[10px] text-neutral-700 leading-tight">
-                  <span class="font-bold uppercase text-[#80182a] block">CELÁ POSTAVA:</span>
-                  <span>Fotografie celé postavy uložena</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- MŘÍŽKA BOXŮ S VŠEMI HODNOTAMI -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 text-xs">
-            
-            <!-- BOX: REÁLNÁ MANIKÚRA -->
-            <div class="card-box p-3 space-y-2">
-              <div class="flex items-center justify-between border-b border-[#80182a]/30 pb-1">
-                <div class="flex items-center space-x-1.5">
-                  <span class="text-base">💅</span>
-                  <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">MANIKÚRA NA RUKOU</h4>
-                </div>
-                <span id="cardNailsSummaryBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#80182a]/15 text-[#80182a]">Square</span>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <div class="w-20 h-24 shrink-0 photo-display-frame aspect-[4/5]">
-                  <img id="realManicurePhoto" src="" alt="Skutečná ruka a nehty">
-                  <div id="manicurePolishTint" class="polish-glaze-layer"></div>
-                  <div class="specular-shine-layer"></div>
-                </div>
-
-                <div class="space-y-1 text-[11px] text-neutral-800">
-                  <div><strong class="text-neutral-900">Styl manikúry:</strong> <span id="cardValNailStyle">Francouzská</span></div>
-                  <div><strong class="text-neutral-900">Tvar nehtů:</strong> <span id="cardValNailShape">Square</span></div>
-                  <div><strong class="text-neutral-900">Barva laku:</strong> <span id="cardValNailColor" class="font-bold text-[#80182a]">Červená</span></div>
-                  <div><strong class="text-neutral-900">Délka nehtů:</strong> <span id="cardValNailLength">Střední</span></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- BOX: PEDIKÚRA & ODHALENÉ PRSTY -->
-            <div class="card-box p-3 space-y-2">
-              <div class="flex items-center justify-between border-b border-[#80182a]/30 pb-1">
-                <div class="flex items-center space-x-1.5">
-                  <span class="text-base">🦶</span>
-                  <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">PEDIKÚRA NA NOHOU</h4>
-                </div>
-                <span id="cardPediBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#80182a]/15 text-[#80182a]">Pedikúra</span>
-              </div>
-              <div class="space-y-1.5 pt-0.5 text-[11px] text-neutral-800">
-                <div class="flex items-center space-x-2">
-                  <span class="w-4 h-4 rounded-full border border-black/20 shadow-sm inline-block" id="pedicureColorDot"></span>
-                  <div>
-                    <strong class="text-neutral-900">Lakování prstů u nohou:</strong>
-                    <div id="cardValToenailColor" class="font-bold text-[#80182a]">Bílá perleť</div>
-                  </div>
-                </div>
-                <p class="text-[10px] text-neutral-600 italic border-t border-[#80182a]/20 pt-1">
-                  Lakování pedikúry je plně synchronizováno s otevřenou špičkou i bosýma nohama.
-                </p>
-              </div>
-            </div>
-
-            <!-- BOX: REÁLNÁ FOTKA OBUTÝCH NOHOU / BOSÝCH NOHOU -->
-            <div class="card-box p-3 space-y-2 sm:col-span-2">
-              <div class="flex items-center justify-between border-b border-[#80182a]/30 pb-1">
-                <div class="flex items-center space-x-1.5">
-                  <span class="text-base">👠</span>
-                  <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">OBUTÍ A PŘEHLÍDKOVÝ MODEL</h4>
-                </div>
-                <span id="cardShoesBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#80182a]/15 text-[#80182a]">Sandály</span>
-              </div>
-
-              <div class="grid grid-cols-12 gap-3 items-center">
-                <div class="col-span-5 sm:col-span-4 photo-display-frame aspect-[4/5]">
-                  <img id="realFootwearPhoto" src="" alt="Skutečná obuv a nohy">
-                  <div id="footwearColorTint" class="polish-glaze-layer"></div>
-                  <div class="specular-shine-layer"></div>
-                </div>
-
-                <div class="col-span-7 sm:col-span-8 space-y-1.5 text-[11px] text-neutral-800">
-                  <div>
-                    <strong class="text-neutral-900 block font-bold">Model obuvi:</strong>
-                    <div id="cardValShoesType" class="font-semibold text-neutral-900">Bílé sandály na vysokém podpatku s otevřenou špičkou</div>
-                  </div>
-                  <div>
-                    <strong class="text-neutral-900 block font-bold">Barevné provedení bot:</strong>
-                    <div id="cardValShoesColor" class="font-medium text-neutral-900">Bílá</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- BOX: VLASY -->
-            <div class="card-box p-3 space-y-1.5">
-              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
-                <span class="text-base">💇</span>
-                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">VLASY & ÚČES</h4>
-              </div>
-              <div class="space-y-1 text-[11px] text-neutral-800 pt-0.5">
-                <div><strong class="text-neutral-900">Typ vlasů:</strong> <span id="cardValHairType">Hladké hedvábné</span></div>
-                <div><strong class="text-neutral-900">Délka vlasů:</strong> <span id="cardValHairLength">Dlouhé (do pasu)</span></div>
-                <div><strong class="text-neutral-900">Barva vlasů:</strong> <span id="cardValHairColor" class="font-semibold text-neutral-900">Černá jako uhel</span></div>
-              </div>
-            </div>
-
-            <!-- BOX: MAKE-UP & TVÁŘ -->
-            <div class="card-box p-3 space-y-1.5">
-              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
-                <span class="text-base">💄</span>
-                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">MAKE-UP & OBLIČEJ</h4>
-              </div>
-              <div class="space-y-1 text-[11px] text-neutral-800 pt-0.5">
-                <div><strong class="text-neutral-900">Styl líčení:</strong> <span id="cardValMakeupStyle">Glamour večerní</span></div>
-                <div><strong class="text-neutral-900">Oční stíny:</strong> <span id="cardValEyeshadow">Zlatavě bronzové</span></div>
-                <div><strong class="text-neutral-900">Řasy:</strong> <span id="cardValEyelashes">Objemové 3D</span></div>
-                <div><strong class="text-neutral-900">Rtěnka:</strong> <span id="cardValLipstick" class="font-bold text-[#80182a]">Sytě červená</span></div>
-              </div>
-            </div>
-
-            <!-- BOX: OŠACENÍ & POKRÝVKA HLAVY -->
-            <div class="card-box p-3 space-y-1.5">
-              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
-                <span class="text-base">👗</span>
-                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">ODĚV & POKRÝVKA HLAVY</h4>
-              </div>
-              <div class="space-y-1 text-[11px] text-neutral-800 pt-0.5">
-                <div><strong class="text-neutral-900">Oblečení:</strong> <span id="cardValClothingDetail">Černé pouzdrové mini šaty</span></div>
-                <div><strong class="text-neutral-900">Spodní prádlo:</strong> <span id="cardValUnderwear">Žádné / Bez prádla</span></div>
-                <div><strong class="text-neutral-900">Pokrývka hlavy:</strong> <span id="cardValHeadwear">Žádná</span></div>
-              </div>
-            </div>
-
-            <!-- BOX: NÁHRDELNÍKY, ŠPERKY & DOPLŇKY -->
-            <div class="card-box p-3 space-y-1.5">
-              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
-                <span class="text-base">💍</span>
-                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">ŠPERKY & DOPLŇKY</h4>
-              </div>
-              <div class="space-y-1 text-[11px] text-neutral-800 pt-0.5">
-                <div class="bg-[#80182a]/10 p-1.5 rounded-lg border border-[#80182a]/20">
-                  <strong class="text-[#80182a]">📿 Náhrdelník / Obojek:</strong>
-                  <div id="cardValNecklace" class="font-bold text-neutral-900">Zlatý řetízek s diamantovým přívěskem</div>
-                </div>
-                <div><strong class="text-neutral-900">Náušnice:</strong> <span id="cardValEarrings">Dlouhé visací krystaly</span></div>
-                <div><strong class="text-neutral-900">Prsteny:</strong> <span id="cardValRings">Sada tenkých prstýnků</span></div>
-                <div><strong class="text-neutral-900">Náramky:</strong> <span id="cardValBracelets">Jemný zlatý řetízek</span></div>
-                <div><strong class="text-neutral-900">Hodinky:</strong> <span id="cardValWatches">Zlaté šperkové hodinky</span></div>
-              </div>
-            </div>
-
-            <!-- BOX: INTIMNÍ ÚPRAVA -->
-            <div class="card-box p-3 space-y-1 sm:col-span-2">
-              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
-                <span class="text-base">✨</span>
-                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">INTIMNÍ ÚPRAVA</h4>
-              </div>
-              <div class="text-[11px] pt-1">
-                <strong class="text-neutral-900">Styl:</strong> <span id="cardValIntimate" class="font-semibold text-neutral-900">Zcela vyholená</span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- SPODNÍ BANNER: PREVENTIVNÍ KONTROLA -->
-          <div class="card-box p-3 mt-3 flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-[#80182a] flex items-center justify-center text-white shrink-0 shadow">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            </div>
-            <div class="text-[11px]">
-              <div class="font-bold uppercase text-[#80182a] tracking-wider">STAV PO PREVENTIVNÍ KONTROLE:</div>
-              <div id="cardHealthStatus" class="font-semibold text-neutral-900">Zcela v pořádku - připravena k prezentaci.</div>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between text-[10px] text-[#80182a] font-bold mt-3 px-1 pt-2 border-t border-[#80182a]/30">
-            <div>EVIDOVÁNO: <span id="cardFooterDate">Dnes</span></div>
-            <div class="text-base text-[#80182a] tracking-widest font-vintageHeader">✦ ✦ ✦</div>
-            <div>SERVISNÍCH ZÁZNAMŮ: <span id="cardFooterRepairsCount">0</span></div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- OBSAH: SPRÁVA & ÚPRAVY -->
       <div id="subviewEdit" class="hidden space-y-6">
-
-        <!-- Dvojice fotografií -->
         <div class="bg-gray-900/80 p-4 rounded-2xl border border-gray-800 space-y-3">
           <div class="flex items-center justify-between">
             <h3 class="text-xs uppercase tracking-wider font-bold text-purple-400">Fotografie panenky</h3>
@@ -429,7 +152,6 @@
               </button>
             </div>
           </div>
-          
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5 text-center">
               <span class="text-[11px] font-medium text-gray-400">Portrét obličeje</span>
@@ -451,7 +173,6 @@
                 </div>
               </div>
             </div>
-
             <div class="space-y-1.5 text-center">
               <span class="text-[11px] font-medium text-gray-400">Celá postava / Tělo</span>
               <div class="relative w-full aspect-[4/5] bg-gray-950 rounded-xl overflow-hidden border border-gray-800 flex items-center justify-center group">
@@ -475,33 +196,29 @@
           </div>
         </div>
 
-        <!-- FORMULÁŘE -->
         <div class="bg-gray-900/80 p-4 rounded-2xl border border-gray-800 space-y-5">
-          
-          <!-- 1. IDENTITA & BIOGRAFIE -->
+          <!-- BIOGRAFIE & IDENTITA -->
           <div>
-            <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400 mb-3 flex items-center space-x-1.5">
-              <span>👤</span>
-              <span>Identita, Biografie & Původ</span>
+            <h3 class="text-xs uppercase tracking-wider font-bold text-cyan-400 mb-3 flex items-center space-x-1.5">
+              <span>📇</span><span>Biografie & Identita</span>
             </h3>
             <div class="space-y-3">
               <div class="grid grid-cols-2 gap-2">
-                <div class="form-item" data-category="identity" data-key="profession"></div>
-                <div class="form-item" data-category="identity" data-key="specialization"></div>
+                <div class="form-item" data-category="bio" data-key="occupation"></div>
+                <div class="form-item" data-category="bio" data-key="specialization"></div>
               </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div class="form-item" data-category="identity" data-key="nationality"></div>
-                <div class="form-item" data-category="identity" data-key="birthPlace"></div>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="form-item" data-category="bio" data-key="nationality"></div>
+                <div class="form-item" data-category="bio" data-key="birthDate"></div>
+                <div class="form-item" data-category="bio" data-key="birthPlace"></div>
               </div>
-              <div class="form-item" data-category="identity" data-key="birthDate"></div>
             </div>
           </div>
 
-          <!-- 2. VZHLED -->
+          <!-- VZHLED -->
           <div class="pt-4 border-t border-gray-800">
             <h3 class="text-xs uppercase tracking-wider font-bold text-pink-400 mb-3 flex items-center space-x-1.5">
-              <span>💄</span>
-              <span>Vzhled & Úprava</span>
+              <span>💄</span><span>Vzhled & Úprava</span>
             </h3>
             <div class="space-y-3">
               <div class="grid grid-cols-3 gap-2">
@@ -510,7 +227,6 @@
                 <div class="form-item" data-category="appearance" data-key="hairLength"></div>
                 <div class="form-item" data-category="appearance" data-key="hairColor"></div>
               </div>
-
               <div class="pt-2 border-t border-gray-800">
                 <div class="text-[11px] text-pink-400 font-bold mb-1">Nehty na rukou (Manikúra)</div>
                 <div class="grid grid-cols-2 gap-2">
@@ -520,15 +236,13 @@
                   <div class="form-item" data-category="appearance" data-key="nailsLength"></div>
                 </div>
               </div>
-
               <div class="pt-2 border-t border-gray-800">
-                <div class="text-[11px] text-purple-400 font-bold mb-1">Nehty na nohou (Pedikúra) & Intimní zóna</div>
+                <div class="text-[11px] text-purple-400 font-bold mb-1">Nehty na nohou (Pedikúra)</div>
                 <div class="grid grid-cols-2 gap-2">
                   <div class="form-item" data-category="appearance" data-key="toenailsColor"></div>
                   <div class="form-item" data-category="appearance" data-key="intimateStyle"></div>
                 </div>
               </div>
-
               <div class="pt-2 border-t border-gray-800">
                 <div class="text-[11px] text-gray-400 font-bold mb-1">Make-up & Tvář</div>
                 <div class="grid grid-cols-2 gap-2">
@@ -541,11 +255,10 @@
             </div>
           </div>
 
-          <!-- 3. OBLEČENÍ -->
+          <!-- OBLEČENÍ -->
           <div class="pt-4 border-t border-gray-800">
             <h3 class="text-xs uppercase tracking-wider font-bold text-purple-400 mb-3 flex items-center space-x-1.5">
-              <span>👗</span>
-              <span>Oblečení & Obuv</span>
+              <span>👗</span><span>Oblečení & Obuv</span>
             </h3>
             <div class="space-y-3">
               <div class="form-item" data-category="outfit" data-key="clothing"></div>
@@ -558,14 +271,13 @@
             </div>
           </div>
 
-          <!-- 4. DOPLŇKY & ŠPERKY -->
+          <!-- DOPLŇKY -->
           <div class="pt-4 border-t border-gray-800">
             <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400 mb-3 flex items-center space-x-1.5">
-              <span>💍</span>
-              <span>Doplňky, Šperky & Náhrdelníky</span>
+              <span>💍</span><span>Doplňky & Šperky</span>
             </h3>
-            <div class="space-y-3">
-              <div class="form-item" data-category="accessories" data-key="necklace"></div>
+            <div class="space-y-2">
+              <div class="form-item" data-category="accessories" data-key="necklaces"></div>
               <div class="grid grid-cols-2 gap-2">
                 <div class="form-item" data-category="accessories" data-key="earrings"></div>
                 <div class="form-item" data-category="accessories" data-key="rings"></div>
@@ -574,10 +286,9 @@
               </div>
             </div>
           </div>
-
         </div>
 
-        <!-- 5. SERVIS & SILUETA TĚLA -->
+        <!-- SERVIS & OPRAVY -->
         <div class="bg-gray-900/80 p-4 rounded-2xl border border-gray-800 space-y-4">
           <div class="flex items-center justify-between">
             <div>
@@ -588,10 +299,8 @@
               <span>+ Přidat opravu</span>
             </button>
           </div>
-
-          <!-- Silueta těla SVG -->
           <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex justify-center">
-            <svg viewBox="0 0 200 480" class="w-48 h-auto max-h-[380px] drop-shadow-md select-none">
+            <svg viewBox="0 0 200 480" class="w-48 h-auto max-h-[380px] drop-shadow-md">
               <circle cx="100" cy="40" r="24" class="body-part-zone" data-part="Hlava" onclick="handleBodyPartClick('Hlava')" />
               <rect x="92" y="64" width="16" height="16" rx="4" class="body-part-zone" data-part="Krk" onclick="handleBodyPartClick('Krk')" />
               <path d="M70,80 L130,80 L125,140 L75,140 Z" class="body-part-zone" data-part="Hrudník" onclick="handleBodyPartClick('Hrudník')" />
@@ -611,30 +320,225 @@
               <path d="M109,420 L130,420 L135,445 L104,445 Z" class="body-part-zone" data-part="Levé chodidlo" onclick="handleBodyPartClick('Levé chodidlo')" />
             </svg>
           </div>
-
           <div class="space-y-2">
-            <div class="flex items-center justify-between">
-              <h4 id="repairHeaderFilterTitle" class="text-xs font-semibold text-gray-300">Historie oprav</h4>
-              <button id="btnResetZoneFilter" onclick="resetRepairFilter()" class="hidden text-[10px] text-purple-400 hover:underline">Zrušit filtr</button>
-            </div>
+            <h4 class="text-xs font-semibold text-gray-300">Historie oprav a stav</h4>
             <div id="repairsList" class="space-y-2"></div>
           </div>
         </div>
-
       </div>
 
-    </div>
+      <!-- SBĚRATELSKÁ PROFILOVÁ KARTA -->
+      <div id="subviewCard" class="space-y-4">
+        <div class="flex justify-end">
+          <button onclick="window.print()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 flex items-center space-x-1">
+            <span>🖨️ Tisknout kartu</span>
+          </button>
+        </div>
+        <div class="collector-card p-4 sm:p-5 rounded-3xl relative">
+          <div class="flex items-center justify-between border-b-2 border-[#80182a] pb-2 text-[#80182a]">
+            <span class="text-xl">★</span>
+            <div class="text-center">
+              <h2 id="cardHeaderName" class="card-title-font text-xl sm:text-2xl font-bold uppercase tracking-wider leading-none">
+                PROFILOVÁ KARTA - PANENKA
+              </h2>
+              <span class="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase block mt-0.5 opacity-90">
+                OSOBNÍ ZÁZNAM - NEPRODEJNÉ, POUZE PRO REFERENCI
+              </span>
+            </div>
+            <span class="text-xl">★</span>
+          </div>
 
+          <div class="grid grid-cols-12 gap-3 mt-3">
+            <div class="col-span-5 relative">
+              <div class="w-full aspect-[3/4] bg-neutral-900 rounded-2xl overflow-hidden border-2 border-[#80182a] shadow-inner">
+                <img id="cardFacePhoto" class="w-full h-full object-cover hidden" alt="Tvář">
+                <div id="cardFacePlaceholder" class="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-neutral-800 p-2 text-center">
+                  <span class="text-3xl mb-1">👩</span>
+                  <span class="text-[10px] text-gray-400 font-bold uppercase">Fotka tváře</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-7 flex flex-col justify-between py-1">
+              <div>
+                <div id="cardSignatureName" class="card-signature-font text-3xl sm:text-4xl text-[#80182a] leading-none mb-1">Panenka</div>
+                <div id="cardBlockName" class="card-title-font text-xl sm:text-2xl font-black text-neutral-900 uppercase leading-tight mb-2">PANENKA</div>
+                <div class="space-y-1 text-[11px] text-neutral-800">
+                  <div class="flex items-center space-x-1.5">
+                    <span>📇</span><span class="font-bold">POVOLÁNÍ:</span><span id="cardValOccupation" class="font-semibold text-neutral-900">Modelka</span>
+                  </div>
+                  <div class="flex items-center space-x-1.5">
+                    <span>🎯</span><span class="font-bold">SPECIALIZACE:</span><span id="cardValSpecialization" class="font-semibold text-neutral-900">Glamour & Fashion</span>
+                  </div>
+                  <div class="flex items-center space-x-1.5">
+                    <span>🌍</span><span class="font-bold">NÁRODNOST:</span><span id="cardValNationality" class="font-semibold text-neutral-900">Česká republika</span>
+                  </div>
+                  <div class="flex items-center space-x-1.5">
+                    <span>🎂</span><span class="font-bold">NAROZENÍ:</span><span id="cardValBirth" class="font-semibold text-neutral-900">Praha</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-[#80182a]/30 flex items-center justify-between text-[10px] font-bold text-[#80182a]">
+                <span>PREMIUM COLLECTOR SERIES</span><span>AUTHENTIC</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAILNÍ BOXY SE VŠEMI HODNOTAMI -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+            <!-- Vlasy & Účes -->
+            <div class="card-box p-3 space-y-1">
+              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
+                <span class="text-base">💇‍♀️</span>
+                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">VLASY & ÚČES</h4>
+              </div>
+              <div class="text-[11px] pt-1 space-y-0.5 text-neutral-800">
+                <div><strong class="text-neutral-900">Typ:</strong> <span id="cardValHairType">Hladké</span></div>
+                <div><strong class="text-neutral-900">Délka:</strong> <span id="cardValHairLength">Dlouhé</span></div>
+                <div><strong class="text-neutral-900">Barva:</strong> <span id="cardValHairColor">Černá</span></div>
+              </div>
+            </div>
+
+            <!-- Make-up & Líčení -->
+            <div class="card-box p-3 space-y-1">
+              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
+                <span class="text-base">💄</span>
+                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">MAKE-UP & LÍČENÍ</h4>
+              </div>
+              <div class="text-[11px] pt-1 space-y-0.5 text-neutral-800">
+                <div><strong class="text-neutral-900">Styl:</strong> <span id="cardValMakeup">Glamour</span></div>
+                <div><strong class="text-neutral-900">Stíny:</strong> <span id="cardValEyeshadow">Zlatavé</span></div>
+                <div><strong class="text-neutral-900">Řasy:</strong> <span id="cardValEyelashes">Objemové 3D</span></div>
+                <div><strong class="text-neutral-900">Rtěnka:</strong> <span id="cardValLipstick">Sytě červená</span></div>
+              </div>
+            </div>
+
+            <!-- Manikúra s reálnou fotkou -->
+            <div class="card-box p-3 space-y-2">
+              <div class="flex items-center justify-between border-b border-[#80182a]/30 pb-1">
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-base">💅</span>
+                  <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">MANIKÚRA</h4>
+                </div>
+                <span id="cardNailsSummaryBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#80182a]/15 text-[#80182a]">Square</span>
+              </div>
+              <div class="grid grid-cols-12 gap-2 items-center">
+                <div class="col-span-5 photo-display-frame aspect-square">
+                  <img id="realManicurePhoto" src="" alt="Manikúra">
+                  <div id="manicurePolishTint" class="polish-glaze-layer"></div>
+                  <div class="specular-shine-layer"></div>
+                </div>
+                <div class="col-span-7 space-y-1 text-[11px] text-neutral-800">
+                  <div><strong class="text-neutral-900">Styl:</strong> <span id="cardValNailStyle">Francouzská</span></div>
+                  <div><strong class="text-neutral-900">Tvar:</strong> <span id="cardValNailShape">Square</span></div>
+                  <div><strong class="text-neutral-900">Barva:</strong> <span id="cardValNailColor">Nude</span></div>
+                  <div><strong class="text-neutral-900">Délka:</strong> <span id="cardValNailLength">Střední</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pedikúra -->
+            <div class="card-box p-3 space-y-1.5">
+              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
+                <span class="text-base">🦶</span>
+                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">PEDIKÚRA</h4>
+              </div>
+              <div class="flex items-center space-x-2 pt-1 text-[11px] text-neutral-800">
+                <span class="w-3.5 h-3.5 rounded-full border border-black/20 shadow-sm inline-block" id="pedicureColorDot"></span>
+                <div>
+                  <strong class="text-neutral-900">Lakování nehtů na nohou:</strong>
+                  <div id="cardValToenailColor" class="font-bold text-neutral-900">Bílá</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Obuv s reálnou fotkou -->
+            <div class="card-box p-3 space-y-2 sm:col-span-2">
+              <div class="flex items-center justify-between border-b border-[#80182a]/30 pb-1">
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-base">👠</span>
+                  <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">OBUTÍ A PEDIKÚRA</h4>
+                </div>
+                <span id="cardShoesBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#80182a]/15 text-[#80182a]">Sandály</span>
+              </div>
+              <div class="grid grid-cols-12 gap-3 items-center">
+                <div class="col-span-5 sm:col-span-4 photo-display-frame aspect-[4/5]">
+                  <img id="realFootwearPhoto" src="" alt="Obuv">
+                  <div id="footwearColorTint" class="polish-glaze-layer"></div>
+                  <div class="specular-shine-layer"></div>
+                </div>
+                <div class="col-span-7 sm:col-span-8 space-y-1 text-[11px] text-neutral-800">
+                  <div><strong class="text-neutral-900 font-bold">Model obuvi:</strong> <span id="cardValShoesType">Bílé sandály</span></div>
+                  <div><strong class="text-neutral-900 font-bold">Barva:</strong> <span id="cardValShoesColor">Bílá</span></div>
+                  <div><strong class="text-neutral-900 font-bold">Oblečení:</strong> <span id="cardValClothing">Mini šaty</span></div>
+                  <div><strong class="text-neutral-900 font-bold">Pokrývka hlavy:</strong> <span id="cardValHeadwear">Žádná</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Spodní prádlo -->
+            <div class="card-box p-3 space-y-1">
+              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
+                <span class="text-base">🛡️</span>
+                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">SPODNÍ PRÁDLO</h4>
+              </div>
+              <div class="text-[11px] pt-1">
+                <div id="cardValUnderwear" class="font-semibold text-neutral-900">Krajkový set</div>
+              </div>
+            </div>
+
+            <!-- Intimní úprava -->
+            <div class="card-box p-3 space-y-1">
+              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
+                <span class="text-base">👙</span>
+                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">INTIMNÍ ÚPRAVA</h4>
+              </div>
+              <div class="text-[11px] pt-1">
+                <div id="cardValIntimate" class="font-semibold text-neutral-900">Zcela vyholená</div>
+              </div>
+            </div>
+
+            <!-- Šperky & Náhrdelníky -->
+            <div class="card-box p-3 space-y-1 sm:col-span-2">
+              <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
+                <span class="text-base">💎</span>
+                <h4 class="card-title-font font-bold text-sm tracking-wide uppercase text-[#80182a]">ŠPERKY & DOPLŇKY</h4>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] pt-1 text-neutral-800">
+                <div><strong class="text-neutral-900">Náhrdelník:</strong> <span id="cardValNecklaces">Žádný</span></div>
+                <div><strong class="text-neutral-900">Náušnice:</strong> <span id="cardValEarrings">Žádné</span></div>
+                <div><strong class="text-neutral-900">Prsteny:</strong> <span id="cardValRings">Žádné</span></div>
+                <div><strong class="text-neutral-900">Náramky:</strong> <span id="cardValBracelets">Žádné</span></div>
+                <div><strong class="text-neutral-900">Hodinky:</strong> <span id="cardValWatches">Žádné</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stav servisu -->
+          <div class="card-box p-3 mt-3 flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-[#80182a] flex items-center justify-center text-white shrink-0 shadow">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </div>
+            <div class="text-[11px]">
+              <div class="font-bold uppercase text-[#80182a] tracking-wider">STAV PO PREVENTIVNÍ KONTROLE & SERVIS</div>
+              <div id="cardHealthStatus" class="font-semibold text-neutral-900">Zcela v pořádku - připravena k prezentaci.</div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-[10px] text-[#80182a] font-bold mt-3 px-1 pt-2 border-t border-[#80182a]/30">
+            <span>PLATNOST: SBĚRATELSKÝ ARCHIV</span><span>♾️ SBÍRKA PANENEK</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- MODÁLNÍ DIALOG: PŘIDAT/UPRAVIT OPRAVU -->
   <div id="repairModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
     <div class="bg-gray-900 border border-gray-800 w-full max-w-sm rounded-2xl p-4 space-y-4">
       <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-        <h3 class="font-bold text-sm text-purple-300">Záznam opravy</h3>
+        <h3 class="font-bold text-sm text-purple-300">Záznam opravy a servisu</h3>
         <button onclick="closeRepairModal()" class="text-gray-400 hover:text-white text-lg font-bold">&times;</button>
       </div>
-      
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-gray-400 mb-1">Část těla</label>
@@ -656,12 +560,16 @@
             <input type="date" id="repDate" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-white">
           </div>
           <div>
-            <label class="block text-gray-400 mb-1">Stav</label>
-            <select id="repStatus" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-white">
-              <option value="Dokončeno">🟢 Dokončeno</option>
-              <option value="Probíhá">🟡 Probíhá</option>
+            <label class="block text-gray-400 mb-1 font-semibold text-purple-400">Aktuální stav</label>
+            <select id="repStatus" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-white font-medium">
+              <option value="Opraveno">🟢 Opraveno</option>
+              <option value="Těsní">🟢 Těsní</option>
+              <option value="Těsní částečně">🟤 Těsní částečně</option>
+              <option value="Probíhá oprava">🟣 Probíhá oprava</option>
+              <option value="Sledování">🟡 Sledování</option>
               <option value="Plánováno">🔵 Plánováno</option>
-              <option value="Sledovat">🟠 Sledovat</option>
+              <option value="Malý únik">🟠 Malý únik</option>
+              <option value="Velký únik">🔴 Velký únik</option>
             </select>
           </div>
         </div>
@@ -671,15 +579,13 @@
         </div>
         <div id="repHistoryCountNotice" class="text-[11px] text-pink-400 font-medium"></div>
       </div>
-
       <div class="flex space-x-2 pt-2">
         <button onclick="closeRepairModal()" class="flex-1 py-2 bg-gray-800 text-gray-300 rounded-xl text-xs font-semibold">Zrušit</button>
-        <button onclick="saveRepairRecord()" class="flex-1 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-semibold">Uložit záznam</button>
+        <button onclick="saveRepairRecord()" class="flex-1 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-semibold shadow-lg">Uložit záznam</button>
       </div>
     </div>
   </div>
 
-  <!-- MODÁLNÍ DIALOG: PŘEJMENOVÁNÍ -->
   <div id="renameModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-gray-900 border border-gray-800 w-full max-w-xs rounded-2xl p-4 space-y-3">
       <h3 class="font-bold text-sm text-purple-300">Přejmenovat panenku</h3>
@@ -691,18 +597,19 @@
     </div>
   </div>
 
-  <!-- MODÁLNÍ DIALOG: POTVRZENÍ SMAZÁNÍ -->
   <div id="deleteModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-gray-900 border border-red-900/50 w-full max-w-xs rounded-2xl p-4 space-y-3 text-center">
       <span class="text-3xl block">⚠️</span>
       <h3 class="font-bold text-sm text-white">Opravdu smazat tuto panenku?</h3>
-      <p class="text-xs text-gray-400">Tato akce trvale odstraní kartu, obě fotografie i celou historii oprav.</p>
+      <p class="text-xs text-gray-400">Tato akce trvale odstraní celou kartu včetně fotek a záznamů servisu.</p>
       <div class="flex space-x-2 pt-2">
         <button onclick="closeDeleteModal()" class="flex-1 py-2 bg-gray-800 text-gray-300 rounded-xl text-xs font-semibold">Zrušit</button>
         <button onclick="executeDeleteDoll()" class="flex-1 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold">Smazat</button>
       </div>
     </div>
   </div>
+
+  <div id="toast" class="toast-popup opacity-0 pointer-events-none"></div>
 
   <script>
     const REAL_PHOTOS = {
@@ -742,98 +649,41 @@
       "burgundská": "#581c87", "vínová": "#4c0519"
     };
 
-    function resolveColorHex(text, fallback = "#e7c9b8") {
-      if (!text) return fallback;
+    function resolveColorHex(text) {
+      if (!text) return "#e7c9b8";
       const clean = text.toLowerCase();
       for (const [key, val] of Object.entries(COLOR_HEX_MAP)) {
         if (clean.includes(key)) return val;
       }
-      return fallback;
+      return "#e7c9b8";
     }
 
-    /* PŘEDNASTAVENÉ HODNOTY FORMULÁŘŮ VČETNĚ NOVÝCH BIOGRAFICKÝCH POLÍ */
     const FORM_CONFIG = {
-      identity: {
-        profession: {
-          label: "💼 Povolání",
-          options: [
-            "Modelka",
-            "Módní ikona / Influencerka",
-            "Tanečnice",
-            "Herečka",
-            "Fitness instruktorka",
-            "Podnikatelka",
-            "Zpěvačka / Umělkyně",
-            "Hosteska & VIP společnice",
-            "Sběratelská múza"
-          ]
-        },
-        specialization: {
-          label: "🎯 Specializace",
-          options: [
-            "Módní přehlídky & Runway",
-            "Fotomodeling & Editorial",
-            "Glamour & Spodní prádlo",
-            "Společenské a večerní události",
-            "Fitness & Sportovní focení",
-            "Umělecký akt & Siluety",
-            "Komerční reklama",
-            "VIP Exkluzivní reprezentace"
-          ]
-        },
-        nationality: {
-          label: "🌍 Národnost",
-          options: [
-            "Česká",
-            "Slovenská",
-            "Francouzská",
-            "Italská",
-            "Švédská",
-            "Ukrajinská",
-            "Japonská",
-            "Americká",
-            "Německá",
-            "Španělská"
-          ]
-        },
-        birthDate: {
-          label: "📅 Datum narození",
-          isDateInput: true
-        },
-        birthPlace: {
-          label: "📍 Místo narození",
-          options: [
-            "Praha, Česká republika",
-            "Brno, Česká republika",
-            "Bratislava, Slovensko",
-            "Paříž, Francie",
-            "Milán, Itálie",
-            "Stockholm, Švédsko",
-            "Kyjev, Ukrajina",
-            "Tokio, Japonsko",
-            "New York, USA",
-            "Barcelona, Španělsko"
-          ]
-        }
+      bio: {
+        occupation: { label: "Povolání", options: ["Modelka", "Hosteska", "Herečka", "Tanečnice", "Fitness trenérka", "Manažerka", "Umělkyně"] },
+        specialization: { label: "Specializace", options: ["Glamour & Fashion", "Přehlídkové molo", "Fotomodeling", "Portrétní modeling", "Spodní prádlo & Plavky", "Komerční reklama"] },
+        nationality: { label: "Národnost", options: ["Česká republika", "Slovensko", "Ukrajina", "Polsko", "Německo", "Itálie", "Francie", "Španělsko", "Japonsko", "USA"] },
+        birthDate: { label: "Datum narození", options: ["15. 5. 2002", "20. 8. 2000", "12. 11. 1999", "3. 3. 2004", "28. 7. 2001", "1. 9. 2003"] },
+        birthPlace: { label: "Místo narození", options: ["Praha", "Brno", "Ostrava", "Plzeň", "Bratislava", "Vídeň", "Paříž", "Milán", "Tokio", "Los Angeles"] }
       },
       appearance: {
-        hairType: { label: "Typ vlasů", options: ["Hladké hedvábné", "Rovné", "Jemné vlny", "Výrazné kudrny", "Afro", "Mikádo / Bob", "Vysoký culík"] },
-        hairLength: { label: "Délka vlasů", options: ["Dlouhé (do pasu)", "Polodlouhé (na ramena)", "Krátké", "Extra dlouhé (pod zadek)"] },
-        hairColor: { label: "Barva vlasů", options: ["Černá jako uhel", "Havraní černá", "Platinová blond", "Zlatá blond", "Medová blond", "Kaštanová hnědá", "Tmavě hnědá", "Ohnivá zrzavá / Měděná", "Pastelová růžová"] },
-        nailsShape: { label: "Tvar nehtů (ruce)", options: ["Square (Hranatý)", "Mandlový (Almond)", "Špičatý (Stiletto)", "Balerína (Coffin)", "Zaoblený (Oval)"] },
-        nailsStyle: { label: "Styl manikúry", options: ["Francouzská manikúra", "Jednobarevný vysoký lesk", "Ombré / Babyboomer", "Matný sametový styl", "Třpytky & Glitry"] },
-        nailsColor: { label: "Barva nehtů na rukou", options: ["Červená", "Francouzská (Bílá špička)", "Nude tělová", "Bílá perleť", "Růžová", "Tyrkysová", "Fialová", "Černá lakovaná", "Modrá", "Oranžová", "Zelená", "Vínová / Burgundská"] },
-        nailsLength: { label: "Délka nehtů (ruce)", options: ["Střední", "Dlouhé salónní", "Krátké přírodní", "Extra dlouhé"] },
-        toenailsColor: { label: "Barva pedikúry na nohou", options: ["Bílá perleť", "Červená klasika", "Nude tělová", "Černá lesklá", "Růžová", "Tyrkysová", "Fialová", "Burgundská vínová", "Zlatá metalická"] },
+        hairType: { label: "Typ vlasů", options: ["Rovné", "Vlnité", "Kudrnaté", "Afro", "Hladké hedvábné", "Mikádo"] },
+        hairLength: { label: "Délka vlasů", options: ["Krátké", "Polodlouhé (na ramena)", "Dlouhé (do pasu)", "Extra dlouhé (pod zadek)"] },
+        hairColor: { label: "Barva vlasů", options: ["Platinová blond", "Zlatá blond", "Medová", "Kaštanová hnědá", "Tmavě hnědá", "Černá jako uhel", "Ohnivá zrzavá", "Růžová"] },
+        nailsShape: { label: "Tvar nehtů", options: ["Square", "Mandlový (Almond)", "Stiletto", "Coffin (Balerína)", "Oval"] },
+        nailsStyle: { label: "Styl manikúry", options: ["Francouzská manikúra", "Jednobarevný lesk", "Ombré", "Matný styl", "Třpytky & Glitry"] },
+        nailsColor: { label: "Barva nehtů na rukou", options: ["Červená", "Nude tělová", "Bílá perleť", "Růžová", "Tyrkysová", "Fialová", "Černá", "Modrá", "Oranžová", "Zelená", "Vínová"] },
+        nailsLength: { label: "Délka nehtů", options: ["Krátké přírodní", "Střední", "Dlouhé", "Extra dlouhé salónní"] },
+        toenailsColor: { label: "Barva pedikúry na nohou", options: ["Bílá perleť", "Červená klasika", "Nude tělová", "Černá lesklá", "Růžová", "Tyrkysová", "Fialová", "Burgundská"] },
         intimateStyle: { label: "Intimní úprava", options: ["Zcela vyholená", "Landing strip (čárka)", "Trojúhelník", "Přirozený sestřih", "Bikini úprava"] },
-        makeup: { label: "Make-up styl", options: ["Glamour večerní", "Nude / Přirozený glow", "Výrazný kouřový", "Svěží denní", "Vintage pin-up", "Bez make-upu"] },
-        eyeshadow: { label: "Oční stíny", options: ["Zlatavě bronzové", "Výrazná černá linka", "Nude / Tělové", "Kouřové černé", "Růžové perleťové", "Fialové"] },
-        eyelashes: { label: "Řasy", options: ["Objemové 3D", "Přírodní prodloužené", "Výrazné kočičí", "Extra husté", "Hedvábné vějířovité"] },
-        lipstick: { label: "Rtěnka", options: ["Sytě červená", "Nude lesk", "Jemně růžová saténová", "Tmavě vínová matná", "Bezbarvý lesk na rty"] }
+        makeup: { label: "Make-up", options: ["Nude / Přirozený", "Glamour večerní", "Výrazný kouřový", "Svěží denní", "Matný porcelánový"] },
+        eyeshadow: { label: "Oční stíny", options: ["Zlatavě bronzové", "Nude / Tělové", "Kouřové černé", "Růžové perleťové", "Fialové"] },
+        eyelashes: { label: "Řasy", options: ["Objemové 3D", "Přírodní prodloužené", "Výrazné kočičí", "Extra husté"] },
+        lipstick: { label: "Rtěnka", options: ["Sytě červená", "Nude lesk", "Jemně růžová", "Vínová matná", "Bezbarvý lesk"] }
       },
       outfit: {
-        clothing: { label: "Oblečení", options: ["Černé pouzdrové mini šaty", "Sako a letní top", "Večerní róba s vysokým rozparkem", "Letní šifonové šaty", "Kožená bunda a minisukně", "Džíny a bílé tričko", "Koktejlové šaty", "Krajkové luxusní body", "Žádné / Bez oděvu"] },
-        underwear: { label: "Spodní prádlo", options: ["Žádné / Bez prádla", "Černý krajkový set", "Bílý saténový korzet", "Červené prádlo s podvazky", "Sportovní bavlněné", "Bezešvé nude prádlo"] },
+        clothing: { label: "Oblečení", options: ["Černé pouzdrové mini šaty", "Večerní róba s rozparkem", "Letní šifonové šaty", "Kožená bunda a minisukně", "Koktejlové šaty"] },
+        underwear: { label: "Spodní prádlo", options: ["Žádné", "Černý krajkový set", "Bílý saténový korzet", "Červené prádlo s podvazky", "Bezešvé nude prádlo"] },
         shoesType: { 
           label: "Typ obuvi", 
           options: [
@@ -851,42 +701,35 @@
             "Tenisky / Sneakers"
           ] 
         },
-        shoesColor: { label: "Barva bot", options: ["Bílá", "Černá", "Červená", "Růžová", "Zlatá metalická", "Stříbrná", "Béžová / Nude", "Modrá", "Fialová", "Burgundská"] },
-        headwear: { label: "Pokrývka hlavy", options: ["Žádná", "Elegantní klobouk s širokou krempou", "Péřová čelenka", "Černý baret", "Saténová čelenka s mašlí", "Sportovní kšiltovka"] }
+        shoesColor: { label: "Barva bot", options: ["Bílá", "Černá", "Červená", "Růžová", "Zlatá", "Stříbrná", "Béžová", "Modrá", "Fialová"] },
+        headwear: { label: "Pokrývka hlavy", options: ["Žádná", "Elegantní klobouk s krempou", "Péřová čelenka", "Baret", "Kšiltovka"] }
       },
       accessories: {
-        necklace: { 
-          label: "📿 Náhrdelníky & Obojky", 
-          options: [
-            "Zlatý řetízek s diamantovým přívěskem",
-            "Perlový náhrdelník",
-            "Diamantový třpytivý choker",
-            "Černý sametový obojek s přívěskem",
-            "Masivní zlatý řetěz",
-            "Stříbrný jemný řetízek s medailonem",
-            "Víceřadý vrstvený náhrdelník",
-            "Kožený gothic obojek s kroužkem",
-            "Žádný"
-          ] 
-        },
-        earrings: { label: "Náušnice", options: ["Dlouhé visací krystaly", "Zlaté kruhy", "Diamantové pecky", "Perlové náušnice", "Žádné"] },
-        rings: { label: "Prsteny", options: ["Sada tenkých zlatých prstýnků", "Masivní zlaté prsteny", "Stříbrný solitér", "Prsten s rubínem", "Žádné"] },
-        bracelets: { label: "Náramky", options: ["Jemný zlatý řetízek", "Široký kovový náramek", "Šňůrka s perličkami", "Pevný zlatý náramek", "Žádné"] },
-        watches: { label: "Hodinky", options: ["Zlaté šperkové hodinky", "Stříbrné minimalistické", "Minimalistické s koženým páskem", "Žádné"] }
+        necklaces: { label: "Náhrdelníky & Obojky", options: ["Jemný diamantový přívěsek", "Masivní zlatý řetěz", "Perlový náhrdelník", "Sametový choker obojek", "Kožený choker s kroužkem", "Vícevrstvý stříbrný řetízek", "Žádný"] },
+        earrings: { label: "Náušnice", options: ["Zlaté kruhy", "Diamantové pecky", "Dlouhé visací krystaly", "Perlové náušnice", "Žádné"] },
+        rings: { label: "Prsteny", options: ["Masivní zlaté prsteny", "Stříbrný solitér", "Sada tenkých prstýnků", "Prsten s rubínem", "Žádné"] },
+        bracelets: { label: "Náramky", options: ["Jemný zlatý řetízek", "Široký kovový náramek", "Šňůrka s perličkami", "Žádné"] },
+        watches: { label: "Hodinky", options: ["Zlaté šperkové hodinky", "Stříbrné minimalistické", "Kožený pásek", "Žádné"] }
       }
     };
-  </script>
 
-  <script>
     let db = null;
     let dolls = [];
     let currentDollId = null;
-    let selectedZoneFilter = null;
-    let deferredPrompt = null;
+    let activePartForRepair = "";
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.className = `toast-popup ${isError ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white'} opacity-100`;
+      setTimeout(() => {
+        toast.className = "toast-popup opacity-0 pointer-events-none";
+      }, 2500);
+    }
 
     function initIndexedDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open("DollCollectionDB_V6", 6);
+        const req = indexedDB.open("DollCollectionDB", 3);
         req.onupgradeneeded = (e) => {
           const database = e.target.result;
           if (!database.objectStoreNames.contains("dolls")) {
@@ -914,20 +757,22 @@
     }
 
     async function saveDollToDB(doll) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const tx = db.transaction("dolls", "readwrite");
         const store = tx.objectStore("dolls");
-        store.put(doll);
-        tx.oncomplete = () => resolve();
+        const req = store.put(doll);
+        req.onsuccess = () => resolve();
+        req.onerror = (e) => reject(e);
       });
     }
 
     async function deleteDollFromDB(id) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const tx = db.transaction("dolls", "readwrite");
         const store = tx.objectStore("dolls");
-        store.delete(id);
-        tx.oncomplete = () => resolve();
+        const req = store.delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = (e) => reject(e);
       });
     }
 
@@ -940,23 +785,22 @@
         const demoDoll = {
           id: "doll_" + Date.now(),
           name: "Monika White",
-          nickname: "Monika",
-          facePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-          bodyPhoto: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80",
-          identity: {
-            profession: "Modelka",
-            specialization: "Módní přehlídky & Runway",
-            nationality: "Česká",
-            birthDate: "1998-07-19",
-            birthPlace: "Praha, Česká republika"
+          facePhoto: "",
+          bodyPhoto: "",
+          bio: {
+            occupation: "Modelka",
+            specialization: "Glamour & Fashion",
+            nationality: "Česká republika",
+            birthDate: "15. 5. 2002",
+            birthPlace: "Praha"
           },
           appearance: {
             hairType: "Hladké hedvábné",
             hairLength: "Dlouhé (do pasu)",
             hairColor: "Černá jako uhel",
-            nailsShape: "Square (Hranatý)",
+            nailsShape: "Square",
             nailsStyle: "Francouzská manikúra",
-            nailsColor: "Červená",
+            nailsColor: "Nude tělová",
             nailsLength: "Střední",
             toenailsColor: "Bílá perleť",
             intimateStyle: "Zcela vyholená",
@@ -967,15 +811,15 @@
           },
           outfit: {
             clothing: "Černé pouzdrové mini šaty",
-            underwear: "Žádné / Bez prádla",
+            underwear: "Žádné",
             shoesType: "Bílé sandály na vysokém podpatku s otevřenou špičkou",
             shoesColor: "Bílá",
             headwear: "Žádná"
           },
           accessories: {
-            necklace: "Zlatý řetízek s diamantovým přívěskem",
+            necklaces: "Sametový choker obojek",
             earrings: "Dlouhé visací krystaly",
-            rings: "Sada tenkých zlatých prstýnků",
+            rings: "Sada tenkých prstýnků",
             bracelets: "Jemný zlatý řetízek",
             watches: "Zlaté šperkové hodinky"
           },
@@ -983,11 +827,11 @@
             {
               id: "r1",
               part: "Pravé koleno",
-              problem: "Mírně volný šroub kloubu",
-              type: "Utažení a promazání silikonovým olejem",
+              problem: "Mírně volný kloub",
+              type: "Utažení kloubu",
               date: "2026-05-12",
-              status: "Dokončeno",
-              note: "Kloub drží stabilně ve všech pózách"
+              status: "Opraveno",
+              note: "Kloub drží pevně v každé póze"
             }
           ]
         };
@@ -996,61 +840,41 @@
       }
 
       renderDollList();
-      if (dolls.length > 0) {
-        openDollDetail(dolls[0].id);
-      }
     });
 
-    function renderDollList(filterQuery = "") {
+    function renderDollList() {
       const grid = document.getElementById("dollsGrid");
       grid.innerHTML = "";
-      const q = filterQuery.toLowerCase().trim();
 
-      const filtered = dolls.filter(d => {
-        if (!q) return true;
-        return (d.name || "").toLowerCase().includes(q) ||
-               (d.identity?.profession || "").toLowerCase().includes(q) ||
-               (d.identity?.nationality || "").toLowerCase().includes(q) ||
-               (d.identity?.birthPlace || "").toLowerCase().includes(q) ||
-               (d.outfit?.clothing || "").toLowerCase().includes(q) ||
-               (d.accessories?.necklace || "").toLowerCase().includes(q) ||
-               (d.appearance?.nailsColor || "").toLowerCase().includes(q);
-      });
-
-      filtered.forEach(doll => {
+      dolls.forEach(doll => {
         const item = document.createElement("div");
         item.className = "bg-gray-900 border border-gray-800 rounded-2xl p-3 flex items-center justify-between shadow hover:border-purple-600/50 transition cursor-pointer";
         item.onclick = () => openDollDetail(doll.id);
 
         const photoSrc = doll.facePhoto || doll.bodyPhoto || "";
         const photoMarkup = photoSrc 
-          ? `<img src="${photoSrc}" class="w-14 h-14 rounded-xl object-cover border border-purple-500/30">`
-          : `<div class="w-14 h-14 rounded-xl bg-gray-800 flex items-center justify-center text-lg">👩</div>`;
+          ? `<img src="${photoSrc}" class="w-12 h-12 rounded-xl object-cover border border-purple-500/30">`
+          : `<div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center text-lg">👩</div>`;
 
         item.innerHTML = `
-          <div class="flex items-center space-x-3 min-w-0">
+          <div class="flex items-center space-x-3">
             ${photoMarkup}
-            <div class="space-y-0.5 min-w-0">
+            <div>
               <h3 class="font-bold text-sm text-white">${doll.name}</h3>
-              <p class="text-[11px] text-amber-400 font-medium">${doll.identity?.profession || 'Modelka'} • ${doll.identity?.nationality || 'Česká'}</p>
-              <div class="flex items-center space-x-2 text-[10px] text-purple-400">
-                <span>💅 ${doll.appearance?.nailsShape || 'Square'}</span>
+              <p class="text-[11px] text-gray-400">${(doll.bio && doll.bio.occupation) ? doll.bio.occupation : (doll.outfit.clothing || 'Bez popisu')}</p>
+              <div class="flex items-center space-x-2 text-[10px] text-purple-400 mt-0.5">
+                <span>💅 ${doll.appearance.nailsShape || 'Square'}</span>
                 <span>•</span>
-                <span>👠 ${doll.outfit?.shoesColor || 'Bílá'}</span>
+                <span>👠 ${doll.outfit.shoesColor || ''}</span>
               </div>
             </div>
           </div>
-          <div class="text-gray-500 pl-2">
+          <div class="text-gray-500">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </div>
         `;
         grid.appendChild(item);
       });
-    }
-
-    function filterDollList() {
-      const q = document.getElementById("searchDollInput").value;
-      renderDollList(q);
     }
 
     function showDollList() {
@@ -1082,44 +906,43 @@
       const newDoll = {
         id: "doll_" + Date.now(),
         name: "Nová panenka " + (dolls.length + 1),
-        nickname: "Panenka " + (dolls.length + 1),
         facePhoto: "",
         bodyPhoto: "",
-        identity: {
-          profession: "Modelka",
-          specialization: "Módní přehlídky & Runway",
-          nationality: "Česká",
-          birthDate: "2000-01-01",
-          birthPlace: "Praha, Česká republika"
+        bio: {
+          occupation: "Modelka",
+          specialization: "Glamour & Fashion",
+          nationality: "Česká republika",
+          birthDate: "1. 1. 2000",
+          birthPlace: "Praha"
         },
         appearance: {
-          hairType: "Hladké hedvábné",
-          hairLength: "Dlouhé (do pasu)",
-          hairColor: "Černá jako uhel",
-          nailsShape: "Square (Hranatý)",
-          nailsStyle: "Francouzská manikúra",
+          hairType: "Dlouhé (do pasu)",
+          hairLength: "Dlouhé",
+          hairColor: "Platinová blond",
+          nailsShape: "Square",
+          nailsStyle: "Jednobarevný lesk",
           nailsColor: "Červená",
           nailsLength: "Střední",
-          toenailsColor: "Bílá perleť",
+          toenailsColor: "Červená klasika",
           intimateStyle: "Zcela vyholená",
-          makeup: "Glamour večerní",
-          eyeshadow: "Zlatavě bronzové",
-          eyelashes: "Objemové 3D",
+          makeup: "Nude / Přirozený",
+          eyeshadow: "Nude / Tělové",
+          eyelashes: "Přírodní prodloužené",
           lipstick: "Sytě červená"
         },
         outfit: {
           clothing: "Černé pouzdrové mini šaty",
-          underwear: "Žádné / Bez prádla",
+          underwear: "Žádné",
           shoesType: "Bílé sandály na vysokém podpatku s otevřenou špičkou",
           shoesColor: "Bílá",
           headwear: "Žádná"
         },
         accessories: {
-          necklace: "Zlatý řetízek s diamantovým přívěskem",
-          earrings: "Dlouhé visací krystaly",
-          rings: "Sada tenkých zlatých prstýnků",
-          bracelets: "Jemný zlatý řetízek",
-          watches: "Zlaté šperkové hodinky"
+          necklaces: "Žádný",
+          earrings: "Žádné",
+          rings: "Žádné",
+          bracelets: "Žádné",
+          watches: "Žádné"
         },
         repairs: []
       };
@@ -1154,26 +977,19 @@
       document.querySelectorAll(".form-item").forEach(container => {
         const cat = container.dataset.category;
         const key = container.dataset.key;
-        const conf = FORM_CONFIG[cat] ? FORM_CONFIG[cat][key] : null;
+        const conf = FORM_CONFIG[cat][key];
         if (!conf) return;
 
-        if (conf.isDateInput) {
-          container.innerHTML = `
-            <label class="block text-[11px] text-gray-400 font-medium mb-1">${conf.label}</label>
-            <input type="date" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:border-purple-500 outline-none" onchange="handleFieldChange('${cat}', '${key}', this.value)">
-          `;
-        } else {
-          container.innerHTML = `
-            <label class="block text-[11px] text-gray-400 font-medium mb-1">${conf.label}</label>
-            <div class="space-y-1">
-              <select class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:border-purple-500 outline-none" onchange="handleFieldChange('${cat}', '${key}', this.value)">
-                ${conf.options.map(opt => `<option value="${opt}">${opt}</option>`).join("")}
-                <option value="__custom__">+ Vlastní hodnota...</option>
-              </select>
-              <input type="text" placeholder="Zadejte vlastní..." class="hidden w-full bg-gray-950 border border-purple-800 rounded-lg p-2 text-xs text-white" oninput="handleCustomFieldInput('${cat}', '${key}', this.value)">
-            </div>
-          `;
-        }
+        container.innerHTML = `
+          <label class="block text-[11px] text-gray-400 font-medium mb-1">${conf.label}</label>
+          <div class="space-y-1">
+            <select class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:border-purple-500 outline-none" onchange="handleFieldChange('${cat}', '${key}', this.value)">
+              ${conf.options.map(opt => `<option value="${opt}">${opt}</option>`).join("")}
+              <option value="__custom__">+ Vlastní hodnota...</option>
+            </select>
+            <input type="text" placeholder="Zadejte vlastní..." class="hidden w-full bg-gray-950 border border-purple-800 rounded-lg p-2 text-xs text-white" onchange="handleCustomFieldInput('${cat}', '${key}', this.value)">
+          </div>
+        `;
       });
     }
 
@@ -1203,63 +1019,49 @@
       document.querySelectorAll(".form-item").forEach(container => {
         const cat = container.dataset.category;
         const key = container.dataset.key;
-        const val = (doll[cat] && doll[cat][key]) ? doll[cat][key] : "";
-        const conf = FORM_CONFIG[cat] ? FORM_CONFIG[cat][key] : null;
-
-        if (conf && conf.isDateInput) {
-          const dateInput = container.querySelector("input[type='date']");
-          if (dateInput) dateInput.value = val || "";
-          return;
-        }
-
+        const val = doll[cat] ? doll[cat][key] : "";
         const select = container.querySelector("select");
         const customInput = container.querySelector("input[type='text']");
-        if (!select) return;
 
         if (val) {
           const match = Array.from(select.options).some(o => o.value === val);
           if (match) {
             select.value = val;
-            if (customInput) customInput.classList.add("hidden");
+            customInput.classList.add("hidden");
           } else {
             select.value = "__custom__";
-            if (customInput) {
-              customInput.value = val;
-              customInput.classList.remove("hidden");
-            }
+            customInput.value = val;
+            customInput.classList.remove("hidden");
           }
         }
       });
     }
 
-    function handleFieldChange(cat, key, val) {
+    async function handleFieldChange(cat, key, val) {
       const doll = dolls.find(d => d.id === currentDollId);
       if (!doll) return;
 
       const container = document.querySelector(`.form-item[data-category="${cat}"][data-key="${key}"]`);
-      const customInput = container ? container.querySelector("input[type='text']") : null;
-
-      doll[cat] = doll[cat] || {};
+      const customInput = container.querySelector("input[type='text']");
 
       if (val === "__custom__") {
-        if (customInput) {
-          customInput.classList.remove("hidden");
-          customInput.focus();
-        }
+        customInput.classList.remove("hidden");
+        customInput.focus();
       } else {
-        if (customInput) customInput.classList.add("hidden");
+        customInput.classList.add("hidden");
+        if (!doll[cat]) doll[cat] = {};
         doll[cat][key] = val;
-        saveDollToDB(doll);
+        await saveDollToDB(doll);
         updateVisuals(doll);
       }
     }
 
-    function handleCustomFieldInput(cat, key, val) {
+    async function handleCustomFieldInput(cat, key, val) {
       const doll = dolls.find(d => d.id === currentDollId);
       if (!doll || !val.trim()) return;
-      doll[cat] = doll[cat] || {};
+      if (!doll[cat]) doll[cat] = {};
       doll[cat][key] = val.trim();
-      saveDollToDB(doll);
+      await saveDollToDB(doll);
       updateVisuals(doll);
     }
 
@@ -1268,48 +1070,115 @@
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const base64 = event.target.result;
         const doll = dolls.find(d => d.id === currentDollId);
         if (!doll) return;
 
         doll[targetField] = base64;
-        saveDollToDB(doll);
+        await saveDollToDB(doll);
         populateForm(doll);
         updateVisuals(doll);
+        showToast("Fotografie uložena");
       };
       reader.readAsDataURL(file);
     }
 
-    function formatDateDisplay(dateStr) {
-      if (!dateStr) return "";
-      try {
-        const parts = dateStr.split("-");
-        if (parts.length === 3) {
-          return `${parseInt(parts[2], 10)}. ${parseInt(parts[1], 10)}. ${parts[0]}`;
-        }
-      } catch (e) {}
-      return dateStr;
-    }
-
     function updateVisuals(doll) {
-      // 1. Texty na kartě v plném znění
-      document.getElementById("cardHeaderName").innerText = `PROFILOVÁ KARTA - ${(doll.name || 'PANENKA').toUpperCase()}`;
-      document.getElementById("cardSignatureName").innerText = doll.nickname || doll.name || "Panenka";
-      document.getElementById("cardBlockName").innerText = (doll.name || 'PANENKA').toUpperCase();
-      document.getElementById("cardValNickname").innerText = doll.nickname || doll.name.split(" ")[0] || "Nezadáno";
+      document.getElementById("cardHeaderName").innerText = `PROFILOVÁ KARTA - ${doll.name}`;
+      document.getElementById("cardSignatureName").innerText = doll.name;
+      document.getElementById("cardBlockName").innerText = doll.name;
 
-      // 2. BIOGRAFIE A IDENTITA
-      document.getElementById("cardValProfession").innerText = doll.identity?.profession || "Modelka";
-      document.getElementById("cardValSpecialization").innerText = doll.identity?.specialization || "Módní přehlídky & Runway";
-      document.getElementById("cardValNationality").innerText = doll.identity?.nationality || "Česká";
+      if (doll.bio) {
+        document.getElementById("cardValOccupation").innerText = doll.bio.occupation || "Modelka";
+        document.getElementById("cardValSpecialization").innerText = doll.bio.specialization || "Glamour";
+        document.getElementById("cardValNationality").innerText = doll.bio.nationality || "Česká republika";
+        document.getElementById("cardValBirth").innerText = `${doll.bio.birthDate || ''} ${doll.bio.birthPlace ? '(' + doll.bio.birthPlace + ')' : ''}`.trim() || "Neuvedeno";
+      }
 
-      const formattedDate = formatDateDisplay(doll.identity?.birthDate);
-      const birthPlace = doll.identity?.birthPlace || "";
-      const datePlaceCombined = [formattedDate, birthPlace].filter(Boolean).join(", ") || "Neuvedeno";
-      document.getElementById("cardValBirthDatePlace").innerText = datePlaceCombined;
+      if (doll.appearance) {
+        document.getElementById("cardValHairType").innerText = doll.appearance.hairType || "Hladké";
+        document.getElementById("cardValHairLength").innerText = doll.appearance.hairLength || "Dlouhé";
+        document.getElementById("cardValHairColor").innerText = doll.appearance.hairColor || "Černá";
 
-      // Fotka obličeje a postavy na kartě
+        document.getElementById("cardValMakeup").innerText = doll.appearance.makeup || "Nude";
+        document.getElementById("cardValEyeshadow").innerText = doll.appearance.eyeshadow || "Nude";
+        document.getElementById("cardValEyelashes").innerText = doll.appearance.eyelashes || "3D";
+        document.getElementById("cardValLipstick").innerText = doll.appearance.lipstick || "Červená";
+
+        document.getElementById("cardValNailStyle").innerText = doll.appearance.nailsStyle || "Francouzská";
+        document.getElementById("cardValNailShape").innerText = doll.appearance.nailsShape || "Square";
+        document.getElementById("cardValNailColor").innerText = doll.appearance.nailsColor || "Nude";
+        document.getElementById("cardValNailLength").innerText = doll.appearance.nailsLength || "Střední";
+        document.getElementById("cardNailsSummaryBadge").innerText = `${doll.appearance.nailsShape || 'Square'} • ${doll.appearance.nailsColor || 'Lak'}`;
+
+        document.getElementById("cardValToenailColor").innerText = doll.appearance.toenailsColor || "Bílá perleť";
+        document.getElementById("cardValIntimate").innerText = doll.appearance.intimateStyle || "Zcela vyholená";
+
+        const toenailsColorHex = resolveColorHex(doll.appearance.toenailsColor);
+        document.getElementById("pedicureColorDot").style.backgroundColor = toenailsColorHex;
+
+        const nailShape = (doll.appearance.nailsShape || "").toLowerCase();
+        const nailStyle = (doll.appearance.nailsStyle || "").toLowerCase();
+
+        let manicurePhotoUrl = REAL_PHOTOS.manicures.natural;
+        if (nailStyle.includes("francouz")) {
+          manicurePhotoUrl = REAL_PHOTOS.manicures.french;
+        } else if (nailShape.includes("square")) {
+          manicurePhotoUrl = REAL_PHOTOS.manicures.square;
+        } else if (nailShape.includes("almond") || nailShape.includes("mandl")) {
+          manicurePhotoUrl = REAL_PHOTOS.manicures.almond;
+        } else if (nailShape.includes("stiletto")) {
+          manicurePhotoUrl = REAL_PHOTOS.manicures.stiletto;
+        } else if (nailShape.includes("coffin") || nailShape.includes("baler")) {
+          manicurePhotoUrl = REAL_PHOTOS.manicures.coffin;
+        }
+
+        document.getElementById("realManicurePhoto").src = manicurePhotoUrl;
+        const manicureTintHex = resolveColorHex(doll.appearance.nailsColor);
+        document.getElementById("manicurePolishTint").style.backgroundColor = manicureTintHex;
+      }
+
+      if (doll.outfit) {
+        document.getElementById("cardValClothing").innerText = doll.outfit.clothing || "Standardní";
+        document.getElementById("cardValUnderwear").innerText = doll.outfit.underwear || "Žádné";
+        document.getElementById("cardValShoesType").innerText = doll.outfit.shoesType || "Sandály";
+        document.getElementById("cardValShoesColor").innerText = doll.outfit.shoesColor || "Bílá";
+        document.getElementById("cardValHeadwear").innerText = doll.outfit.headwear || "Žádná";
+        document.getElementById("cardShoesBadge").innerText = doll.outfit.shoesColor ? `${doll.outfit.shoesColor} obutí` : "Přehlídkový model";
+
+        const shoeType = (doll.outfit.shoesType || "").toLowerCase();
+        let footwearPhotoUrl = REAL_PHOTOS.footwear.sandals_strappy_stiletto;
+
+        if (shoeType.includes("bosa") || shoeType.includes("bosé")) {
+          footwearPhotoUrl = REAL_PHOTOS.footwear.barefoot;
+        } else if (shoeType.includes("platform") && shoeType.includes("otevřen")) {
+          footwearPhotoUrl = REAL_PHOTOS.footwear.open_toe_pumps;
+        } else if (shoeType.includes("platform")) {
+          footwearPhotoUrl = REAL_PHOTOS.footwear.platform_pumps;
+        } else if (shoeType.includes("kozačk") || shoeType.includes("boots")) {
+          footwearPhotoUrl = REAL_PHOTOS.footwear.high_boots;
+        } else if (shoeType.includes("šněrov") && shoeType.includes("taneč")) {
+          footwearPhotoUrl = REAL_PHOTOS.footwear.dance_laceup;
+        } else if (shoeType.includes("šněrov") || shoeType.includes("gladiat")) {
+          footwearPhotoUrl = REAL_PHOTOS.footwear.gladiator_sandals;
+        } else if (shoeType.includes("tenisk") || shoeType.includes("sneaker")) {
+          footwearPhotoUrl = REAL_PHOTOS.footwear.sneakers;
+        }
+
+        document.getElementById("realFootwearPhoto").src = footwearPhotoUrl;
+        const shoeColorHex = resolveColorHex(doll.outfit.shoesColor);
+        document.getElementById("footwearColorTint").style.backgroundColor = shoeColorHex;
+      }
+
+      if (doll.accessories) {
+        document.getElementById("cardValNecklaces").innerText = doll.accessories.necklaces || "Žádný";
+        document.getElementById("cardValEarrings").innerText = doll.accessories.earrings || "Žádné";
+        document.getElementById("cardValRings").innerText = doll.accessories.rings || "Žádné";
+        document.getElementById("cardValBracelets").innerText = doll.accessories.bracelets || "Žádné";
+        document.getElementById("cardValWatches").innerText = doll.accessories.watches || "Žádné";
+      }
+
       const cardFaceImg = document.getElementById("cardFacePhoto");
       const cardFacePlace = document.getElementById("cardFacePlaceholder");
       if (doll.facePhoto) {
@@ -1321,165 +1190,83 @@
         cardFacePlace.classList.remove("hidden");
       }
 
-      const bodyImgPreview = document.getElementById("cardBodyPhotoPreview");
-      bodyImgPreview.src = doll.bodyPhoto || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80";
+      // Stav servisu a zvýraznění částí těla
+      const activeLeaks = (doll.repairs || []).filter(r => r.status === 'Velký únik' || r.status === 'Malý únik');
+      const inProgress = (doll.repairs || []).filter(r => r.status === 'Probíhá oprava' || r.status === 'Sledování');
+      const statusElement = document.getElementById("cardHealthStatus");
 
-      // 3. SKUTEČNÁ FOTKA MANIKÚRY NA RUKOU
-      const nailShape = (doll.appearance?.nailsShape || "").toLowerCase();
-      const nailStyle = (doll.appearance?.nailsStyle || "").toLowerCase();
-
-      let manicurePhotoUrl = REAL_PHOTOS.manicures.square;
-      if (nailStyle.includes("francouz")) {
-        manicurePhotoUrl = REAL_PHOTOS.manicures.french;
-      } else if (nailShape.includes("almond") || nailShape.includes("mandl")) {
-        manicurePhotoUrl = REAL_PHOTOS.manicures.almond;
-      } else if (nailShape.includes("stiletto") || nailShape.includes("špič")) {
-        manicurePhotoUrl = REAL_PHOTOS.manicures.stiletto;
-      } else if (nailShape.includes("coffin") || nailShape.includes("baler")) {
-        manicurePhotoUrl = REAL_PHOTOS.manicures.coffin;
-      } else if (nailShape.includes("oval") || nailShape.includes("zaobl")) {
-        manicurePhotoUrl = REAL_PHOTOS.manicures.natural;
-      }
-
-      document.getElementById("realManicurePhoto").src = manicurePhotoUrl;
-      const manicureTintHex = resolveColorHex(doll.appearance?.nailsColor, '#b91c1c');
-      document.getElementById("manicurePolishTint").style.backgroundColor = manicureTintHex;
-
-      document.getElementById("cardNailsSummaryBadge").innerText = `${doll.appearance?.nailsShape || 'Square'} • ${doll.appearance?.nailsColor || 'Lak'}`;
-      document.getElementById("cardValNailStyle").innerText = doll.appearance?.nailsStyle || "Francouzská";
-      document.getElementById("cardValNailShape").innerText = doll.appearance?.nailsShape || "Square";
-      document.getElementById("cardValNailColor").innerText = doll.appearance?.nailsColor || "Červená";
-      document.getElementById("cardValNailLength").innerText = doll.appearance?.nailsLength || "Střední";
-
-      // 4. SKUTEČNÁ FOTKA OBUVI & PEDIKÚRA
-      const shoeType = (doll.outfit?.shoesType || "").toLowerCase();
-      let footwearPhotoUrl = REAL_PHOTOS.footwear.sandals_strappy_stiletto;
-
-      if (shoeType.includes("bosa") || shoeType.includes("bosé")) {
-        footwearPhotoUrl = REAL_PHOTOS.footwear.barefoot;
-      } else if (shoeType.includes("platform") && shoeType.includes("otevřen")) {
-        footwearPhotoUrl = REAL_PHOTOS.footwear.open_toe_pumps;
-      } else if (shoeType.includes("platform")) {
-        footwearPhotoUrl = REAL_PHOTOS.footwear.platform_pumps;
-      } else if (shoeType.includes("kozačk") || shoeType.includes("boot")) {
-        footwearPhotoUrl = REAL_PHOTOS.footwear.high_boots;
-      } else if (shoeType.includes("šněrov") && shoeType.includes("taneč")) {
-        footwearPhotoUrl = REAL_PHOTOS.footwear.dance_laceup;
-      } else if (shoeType.includes("šněrov") || shoeType.includes("gladiat")) {
-        footwearPhotoUrl = REAL_PHOTOS.footwear.gladiator_sandals;
-      } else if (shoeType.includes("tenisk") || shoeType.includes("sneaker")) {
-        footwearPhotoUrl = REAL_PHOTOS.footwear.sneakers;
-      }
-
-      document.getElementById("realFootwearPhoto").src = footwearPhotoUrl;
-      const shoeColorHex = resolveColorHex(doll.outfit?.shoesColor, '#ffffff');
-      document.getElementById("footwearColorTint").style.backgroundColor = shoeColorHex;
-
-      document.getElementById("cardShoesBadge").innerText = doll.outfit?.shoesColor ? `${doll.outfit.shoesColor} obutí` : "Přehlídkový model";
-      document.getElementById("cardValShoesType").innerText = doll.outfit?.shoesType || "Sandály na jehlovém podpatku";
-      document.getElementById("cardValShoesColor").innerText = doll.outfit?.shoesColor || "Bílá";
-
-      // Pedikúra
-      const toenailsColorHex = resolveColorHex(doll.appearance?.toenailsColor, '#f8fafc');
-      document.getElementById("pedicureColorDot").style.backgroundColor = toenailsColorHex;
-      document.getElementById("cardValToenailColor").innerText = doll.appearance?.toenailsColor || "Bílá perleť";
-      document.getElementById("cardPediBadge").innerText = `Lak: ${doll.appearance?.toenailsColor || 'Bílá'}`;
-
-      // Vlasy detailně
-      document.getElementById("cardValHairType").innerText = doll.appearance?.hairType || "Hladké hedvábné";
-      document.getElementById("cardValHairLength").innerText = doll.appearance?.hairLength || "Dlouhé (do pasu)";
-      document.getElementById("cardValHairColor").innerText = doll.appearance?.hairColor || "Černá jako uhel";
-
-      // Make-up detailně
-      document.getElementById("cardValMakeupStyle").innerText = doll.appearance?.makeup || "Glamour večerní";
-      document.getElementById("cardValEyeshadow").innerText = doll.appearance?.eyeshadow || "Zlatavě bronzové";
-      document.getElementById("cardValEyelashes").innerText = doll.appearance?.eyelashes || "Objemové 3D";
-      document.getElementById("cardValLipstick").innerText = doll.appearance?.lipstick || "Sytě červená";
-
-      // Oděv detailně
-      document.getElementById("cardValClothingDetail").innerText = doll.outfit?.clothing || "Černé pouzdrové mini šaty";
-      document.getElementById("cardValUnderwear").innerText = doll.outfit?.underwear || "Žádné / Bez prádla";
-      document.getElementById("cardValHeadwear").innerText = doll.outfit?.headwear || "Žádná";
-
-      // Šperky & Náhrdelník
-      document.getElementById("cardValNecklace").innerText = doll.accessories?.necklace || "Žádný";
-      document.getElementById("cardValEarrings").innerText = doll.accessories?.earrings || "Žádné";
-      document.getElementById("cardValRings").innerText = doll.accessories?.rings || "Žádné";
-      document.getElementById("cardValBracelets").innerText = doll.accessories?.bracelets || "Žádné";
-      document.getElementById("cardValWatches").innerText = doll.accessories?.watches || "Žádné";
-
-      // Intimní úprava
-      document.getElementById("cardValIntimate").innerText = doll.appearance?.intimateStyle || "Zcela vyholená";
-
-      // Zdravotní stav a opravy
-      const repairs = doll.repairs || [];
-      const activeRepairs = repairs.filter(r => r.status === 'Probíhá' || r.status === 'Plánováno').length;
-      const healthEl = document.getElementById("cardHealthStatus");
-
-      if (activeRepairs > 0) {
-        healthEl.innerHTML = `<span class="text-amber-800 font-bold">Probíhá údržba:</span> ${activeRepairs} aktivní servisní záznam(y).`;
-      } else if (repairs.length > 0) {
-        healthEl.innerText = `Preventivní kontrola v pořádku. Veškeré dřívější opravy (${repairs.length}) úspěšně dokončeny.`;
+      if (activeLeaks.length > 0) {
+        statusElement.innerText = `POZOR: Zaznamenán aktivní únik (${activeLeaks.length}×)! Nutná okamžitá oprava.`;
+        statusElement.className = "font-bold text-red-600";
+      } else if (inProgress.length > 0) {
+        statusElement.innerText = `V péči: Probíhá aktivní oprava nebo sledování těsnění.`;
+        statusElement.className = "font-semibold text-amber-700";
       } else {
-        healthEl.innerText = "Zcela v pořádku - připravena k prezentaci.";
+        statusElement.innerText = `Zcela v pořádku - plně těsní, připravena k prezentaci.`;
+        statusElement.className = "font-semibold text-neutral-900";
       }
 
-      document.getElementById("cardFooterDate").innerText = new Date().toLocaleDateString('cs-CZ');
-      document.getElementById("cardFooterRepairsCount").innerText = repairs.length;
-
-      // Zvýraznění siluety
       document.querySelectorAll(".body-part-zone").forEach(el => {
         const part = el.dataset.part;
-        const count = repairs.filter(r => r.part === part).length;
-        el.classList.toggle("has-repairs", count > 0);
+        const count = (doll.repairs || []).filter(r => r.part === part).length;
+        if (count > 0) {
+          el.classList.add("has-repairs");
+        } else {
+          el.classList.remove("has-repairs");
+        }
       });
+    }
+
+    function getStatusBadgeStyle(status) {
+      switch (status) {
+        case "Velký únik":
+          return "bg-red-950 text-red-300 border border-red-700";
+        case "Malý únik":
+          return "bg-orange-950 text-orange-300 border border-orange-700";
+        case "Probíhá oprava":
+          return "bg-purple-950 text-purple-300 border border-purple-700";
+        case "Sledování":
+          return "bg-yellow-950 text-yellow-300 border border-yellow-700";
+        case "Plánováno":
+          return "bg-blue-950 text-blue-300 border border-blue-700";
+        case "Opraveno":
+          return "bg-emerald-950 text-emerald-300 border border-emerald-700";
+        case "Těsní":
+          return "bg-teal-950 text-teal-300 border border-teal-700";
+        case "Těsní částečně":
+          return "bg-amber-950 text-amber-300 border border-amber-700";
+        default:
+          return "bg-gray-800 text-gray-300";
+      }
     }
 
     function renderRepairs(doll) {
       const container = document.getElementById("repairsList");
       container.innerHTML = "";
 
-      const repairs = doll.repairs || [];
-      const filtered = selectedZoneFilter 
-        ? repairs.filter(r => r.part === selectedZoneFilter) 
-        : repairs;
-
-      const titleEl = document.getElementById("repairHeaderFilterTitle");
-      const resetBtn = document.getElementById("btnResetZoneFilter");
-
-      if (selectedZoneFilter) {
-        titleEl.innerText = `Historie oprav: ${selectedZoneFilter} (${filtered.length})`;
-        resetBtn.classList.remove("hidden");
-      } else {
-        titleEl.innerText = `Historie oprav (celkem: ${repairs.length})`;
-        resetBtn.classList.add("hidden");
-      }
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-500 italic p-2 bg-gray-950 rounded-lg">Žádné zaznamenané opravy pro zvolené zobrazení.</p>`;
+      if (!doll.repairs || doll.repairs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 italic p-2 bg-gray-950 rounded-lg">Žádné zaznamenané opravy. Panenka je v bezvadném stavu.</p>`;
         return;
       }
 
-      filtered.slice().reverse().forEach((rep) => {
+      doll.repairs.slice().reverse().forEach((rep, index) => {
         const item = document.createElement("div");
-        item.className = "bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs space-y-1";
+        item.className = "bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs space-y-1.5 shadow";
+        const badgeClass = getStatusBadgeStyle(rep.status);
+
         item.innerHTML = `
           <div class="flex justify-between items-start">
-            <span class="font-bold text-purple-300">${rep.part}</span>
-            <div class="flex items-center space-x-1.5">
-              <span class="text-[10px] px-2 py-0.5 rounded-full ${rep.status === 'Dokončeno' ? 'bg-emerald-950 text-emerald-300' : 'bg-amber-950 text-amber-300'} font-semibold">
-                ${rep.status}
-              </span>
-              <button onclick="deleteRepairRecord('${rep.id}')" class="text-gray-500 hover:text-red-400 p-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
+            <span class="font-bold text-purple-300 text-sm">${rep.part}</span>
+            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold ${badgeClass}">
+              ${rep.status}
+            </span>
           </div>
-          <div class="text-gray-300"><strong class="text-gray-400">Problém:</strong> ${rep.problem || '-'}</div>
-          <div class="text-gray-300"><strong class="text-gray-400">Oprava:</strong> ${rep.type || '-'}</div>
+          <div class="text-gray-300"><strong class="text-gray-400">Problém / únik:</strong> ${rep.problem || '-'}</div>
+          <div class="text-gray-300"><strong class="text-gray-400">Provedený zásah:</strong> ${rep.type || '-'}</div>
+          ${rep.note ? `<div class="text-gray-400 bg-gray-900/60 p-1.5 rounded-lg text-[11px]">📝 ${rep.note}</div>` : ''}
           <div class="flex justify-between text-[11px] text-gray-500 pt-1 border-t border-gray-800/60">
             <span>📅 ${rep.date || 'Bez data'}</span>
-            <span>${rep.note ? '📝 ' + rep.note : ''}</span>
+            <button onclick="deleteRepairRecord('${rep.id}')" class="text-red-400 hover:text-red-300 text-[10px]">Odstranit</button>
           </div>
         `;
         container.appendChild(item);
@@ -1487,39 +1274,33 @@
     }
 
     function handleBodyPartClick(partName) {
-      selectedZoneFilter = partName;
-      document.querySelectorAll('.body-part-zone').forEach(el => {
-        el.classList.toggle('active', el.dataset.part === partName);
-      });
-      const doll = dolls.find(d => d.id === currentDollId);
-      if (doll) renderRepairs(doll);
-    }
-
-    function resetRepairFilter() {
-      selectedZoneFilter = null;
-      document.querySelectorAll('.body-part-zone').forEach(el => el.classList.remove('active'));
-      const doll = dolls.find(d => d.id === currentDollId);
-      if (doll) renderRepairs(doll);
+      activePartForRepair = partName;
+      openRepairModal(partName);
     }
 
     function openRepairModal(prefilledPart = "") {
       const doll = dolls.find(d => d.id === currentDollId);
-      if (!doll) return;
+      if (!doll) {
+        showToast("Nejprve vyberte panenku", true);
+        return;
+      }
 
-      const part = prefilledPart || selectedZoneFilter || "Pravé koleno";
-      document.getElementById("repPart").value = part;
+      document.getElementById("repPart").value = prefilledPart || "";
       document.getElementById("repProblem").value = "";
       document.getElementById("repType").value = "";
       document.getElementById("repDate").value = new Date().toISOString().split("T")[0];
-      document.getElementById("repStatus").value = "Dokončeno";
+      document.getElementById("repStatus").value = "Opraveno";
       document.getElementById("repNote").value = "";
 
-      const count = (doll.repairs || []).filter(r => r.part === part).length;
+      const count = prefilledPart 
+        ? (doll.repairs || []).filter(r => r.part === prefilledPart).length 
+        : 0;
+      
       const countNotice = document.getElementById("repHistoryCountNotice");
-      if (count > 0) {
-        countNotice.innerText = `⚠️ Toto místo (${part}) bylo v minulosti opravováno již ${count}×.`;
+      if (prefilledPart && count > 0) {
+        countNotice.innerText = `⚠️ Toto místo (${prefilledPart}) má v historii již ${count} záznamů oprav/úniků.`;
       } else {
-        countNotice.innerText = `První oprava pro toto místo.`;
+        countNotice.innerText = "";
       }
 
       document.getElementById("repairModal").classList.remove("hidden");
@@ -1529,13 +1310,16 @@
       document.getElementById("repairModal").classList.add("hidden");
     }
 
-    function saveRepairRecord() {
+    async function saveRepairRecord() {
       const doll = dolls.find(d => d.id === currentDollId);
-      if (!doll) return;
+      if (!doll) {
+        showToast("Chyba: Panenka nebyla nalezena", true);
+        return;
+      }
 
       const part = document.getElementById("repPart").value.trim() || "Neuvedeno";
-      const problem = document.getElementById("repProblem").value.trim() || "Běžná údržba";
-      const type = document.getElementById("repType").value.trim() || "Seřízení / oprava";
+      const problem = document.getElementById("repProblem").value.trim();
+      const type = document.getElementById("repType").value.trim();
       const date = document.getElementById("repDate").value;
       const status = document.getElementById("repStatus").value;
       const note = document.getElementById("repNote").value.trim();
@@ -1552,19 +1336,27 @@
         note
       });
 
-      saveDollToDB(doll);
-      closeRepairModal();
-      renderRepairs(doll);
-      updateVisuals(doll);
+      try {
+        await saveDollToDB(doll);
+        closeRepairModal();
+        renderRepairs(doll);
+        updateVisuals(doll);
+        showToast("Záznam servisu úspěšně uložen!");
+      } catch (err) {
+        console.error(err);
+        showToast("Chyba při ukládání záznamu", true);
+      }
     }
 
-    function deleteRepairRecord(repairId) {
+    async function deleteRepairRecord(repId) {
       const doll = dolls.find(d => d.id === currentDollId);
-      if (!doll) return;
-      doll.repairs = (doll.repairs || []).filter(r => r.id !== repairId);
-      saveDollToDB(doll);
+      if (!doll || !doll.repairs) return;
+
+      doll.repairs = doll.repairs.filter(r => r.id !== repId);
+      await saveDollToDB(doll);
       renderRepairs(doll);
       updateVisuals(doll);
+      showToast("Záznam odstraněn");
     }
 
     function openRenameModal() {
@@ -1578,17 +1370,17 @@
       document.getElementById("renameModal").classList.add("hidden");
     }
 
-    function saveNewName() {
+    async function saveNewName() {
       const doll = dolls.find(d => d.id === currentDollId);
       const newName = document.getElementById("renameInput").value.trim();
       if (!doll || !newName) return;
 
       doll.name = newName;
-      doll.nickname = newName.split(" ")[0];
-      saveDollToDB(doll);
+      await saveDollToDB(doll);
       closeRenameModal();
       document.getElementById("headerTitle").innerText = newName;
       updateVisuals(doll);
+      showToast("Jméno upraveno");
     }
 
     function confirmDeleteDoll() {
@@ -1605,6 +1397,7 @@
       dolls = dolls.filter(d => d.id !== currentDollId);
       closeDeleteModal();
       showDollList();
+      showToast("Panenka smazána");
     }
 
     function openExportModal() {
@@ -1616,21 +1409,6 @@
       downloadAnchor.click();
       downloadAnchor.remove();
     }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const btn = document.getElementById('btnPwaInstall');
-      if (btn) {
-        btn.classList.remove('hidden');
-        btn.onclick = () => {
-          btn.classList.add('hidden');
-          deferredPrompt.prompt();
-          deferredPrompt = null;
-        };
-      }
-    });
   </script>
 </body>
 </html>
-```
