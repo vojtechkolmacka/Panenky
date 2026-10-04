@@ -153,15 +153,16 @@
         <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </span>
-        <input type="text" id="searchDollInput" oninput="filterDollList()" placeholder="Hledat panenku podle jména, šatů, šperků..." class="w-full pl-9 pr-4 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-600">
+        <input type="text" id="searchDollInput" oninput="filterDollList()" placeholder="Hledat panenku podle jména, povolání, národnosti..." class="w-full pl-9 pr-4 py-2.5 bg-gray-900 border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-600">
       </div>
 
       <div id="dollsGrid" class="space-y-3 pt-1"></div>
     </div>
 
+    <!-- POHLED 2: DETAIL PANENKY -->
     <div id="viewDetail" class="hidden space-y-4">
       
-      <!-- Volič zobrazení: Správa / Sběratelská karta -->
+      <!-- Volič zobrazení -->
       <div class="flex p-1 bg-gray-900 rounded-xl border border-gray-800">
         <button id="tabBtnCard" onclick="switchDetailTab('card')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-purple-600 text-white transition">
           ⭐ Sběratelská Profilová Karta
@@ -175,7 +176,7 @@
       <div id="subviewCard" class="space-y-4">
         <div class="flex justify-end gap-2">
           <button onclick="window.print()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 flex items-center space-x-1">
-            <span>🖨️️ Tisknout kartu</span>
+            <span>🖨 Tisknout kartu</span>
           </button>
           <button onclick="switchDetailTab('edit')" class="text-xs bg-purple-950/80 hover:bg-purple-900 text-purple-300 px-3 py-1.5 rounded-lg border border-purple-800 flex items-center space-x-1">
             <span>✏️ Upravit hodnoty</span>
@@ -198,7 +199,7 @@
             <span class="text-xl">★</span>
           </div>
 
-          <!-- HLAVNÍ SEKCE: OBLIČEJ + IDENTITA + POSTAVA -->
+          <!-- HLAVNÍ SEKCE: OBLIČEJ + IDENTITA & BIOGRAFIE + POSTAVA -->
           <div class="grid grid-cols-12 gap-3 mt-3 items-stretch">
             
             <div class="col-span-5 relative">
@@ -211,15 +212,17 @@
               </div>
             </div>
 
-            <div class="col-span-7 flex flex-col justify-between py-1">
+            <div class="col-span-7 flex flex-col justify-between py-0.5">
               <div>
                 <div id="cardSignatureName" class="card-signature-font text-3xl sm:text-4xl text-[#80182a] leading-none mb-1">Panenka</div>
-                <div id="cardBlockName" class="card-title-font text-xl sm:text-2xl font-black text-neutral-900 uppercase leading-tight mb-2">PANENKA</div>
+                <div id="cardBlockName" class="card-title-font text-xl sm:text-2xl font-black text-neutral-900 uppercase leading-tight mb-1.5">PANENKA</div>
 
                 <div class="space-y-1 text-[11px] text-neutral-800">
                   <div>👤 <strong class="text-neutral-900">PŘEZDÍVKA:</strong> <span id="cardValNickname" class="font-semibold text-[#80182a]">Nezadáno</span></div>
-                  <div>👗 <strong class="text-neutral-900">OUTFIT:</strong> <span id="cardValClothingHeader" class="font-semibold text-neutral-900">Standardní</span></div>
-                  <div>💇 <strong class="text-neutral-900">VLASY:</strong> <span id="cardValHairHeader" class="font-semibold text-neutral-900">Havraní černá</span></div>
+                  <div>💼 <strong class="text-neutral-900">POVOLÁNÍ:</strong> <span id="cardValProfession" class="font-semibold text-neutral-900">Modelka</span></div>
+                  <div>🎯 <strong class="text-neutral-900">SPECIALIZACE:</strong> <span id="cardValSpecialization" class="font-semibold text-neutral-900">Módní přehlídky & editorial</span></div>
+                  <div>🌍 <strong class="text-neutral-900">NÁRODNOST:</strong> <span id="cardValNationality" class="font-semibold text-neutral-900">Česká</span></div>
+                  <div>📅 <strong class="text-neutral-900">NAROZENÍ:</strong> <span id="cardValBirthDatePlace" class="font-semibold text-neutral-900">19. 7. 1998, Praha</span></div>
                 </div>
               </div>
 
@@ -230,13 +233,14 @@
                 </div>
                 <div class="text-[10px] text-neutral-700 leading-tight">
                   <span class="font-bold uppercase text-[#80182a] block">CELÁ POSTAVA:</span>
-                  <span id="cardBodyStatusText">Fotografie celé postavy uložena</span>
+                  <span>Fotografie celé postavy uložena</span>
                 </div>
               </div>
             </div>
 
           </div>
 
+          <!-- MŘÍŽKA BOXŮ S VŠEMI HODNOTAMI -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 text-xs">
             
             <!-- BOX: REÁLNÁ MANIKÚRA -->
@@ -318,7 +322,7 @@
               </div>
             </div>
 
-            <!-- BOX: VLASY (KOMPLETNÍ SPECIFIKACE) -->
+            <!-- BOX: VLASY -->
             <div class="card-box p-3 space-y-1.5">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">💇</span>
@@ -358,7 +362,7 @@
               </div>
             </div>
 
-            <!-- BOX: NÁHRDELNÍKY, ŠPERKY & DOPLŇKY (S NOVOU POLOŽKOU NÁHRDELNÍKY) -->
+            <!-- BOX: NÁHRDELNÍKY, ŠPERKY & DOPLŇKY -->
             <div class="card-box p-3 space-y-1.5">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">💍</span>
@@ -409,6 +413,7 @@
         </div>
       </div>
 
+      <!-- OBSAH: SPRÁVA & ÚPRAVY -->
       <div id="subviewEdit" class="hidden space-y-6">
 
         <!-- Dvojice fotografií -->
@@ -470,11 +475,30 @@
           </div>
         </div>
 
-        <!-- FORMULÁŘE PRO VZHLED, OBLEČENÍ A DOPLŇKY -->
+        <!-- FORMULÁŘE -->
         <div class="bg-gray-900/80 p-4 rounded-2xl border border-gray-800 space-y-5">
           
-          <!-- VZHLED -->
+          <!-- 1. IDENTITA & BIOGRAFIE -->
           <div>
+            <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400 mb-3 flex items-center space-x-1.5">
+              <span>👤</span>
+              <span>Identita, Biografie & Původ</span>
+            </h3>
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="form-item" data-category="identity" data-key="profession"></div>
+                <div class="form-item" data-category="identity" data-key="specialization"></div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="form-item" data-category="identity" data-key="nationality"></div>
+                <div class="form-item" data-category="identity" data-key="birthPlace"></div>
+              </div>
+              <div class="form-item" data-category="identity" data-key="birthDate"></div>
+            </div>
+          </div>
+
+          <!-- 2. VZHLED -->
+          <div class="pt-4 border-t border-gray-800">
             <h3 class="text-xs uppercase tracking-wider font-bold text-pink-400 mb-3 flex items-center space-x-1.5">
               <span>💄</span>
               <span>Vzhled & Úprava</span>
@@ -517,7 +541,7 @@
             </div>
           </div>
 
-          <!-- OBLEČENÍ -->
+          <!-- 3. OBLEČENÍ -->
           <div class="pt-4 border-t border-gray-800">
             <h3 class="text-xs uppercase tracking-wider font-bold text-purple-400 mb-3 flex items-center space-x-1.5">
               <span>👗</span>
@@ -534,7 +558,7 @@
             </div>
           </div>
 
-          <!-- DOPLŇKY VČETNĚ NOVÉHO NÁHRDELNÍKU -->
+          <!-- 4. DOPLŇKY & ŠPERKY -->
           <div class="pt-4 border-t border-gray-800">
             <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400 mb-3 flex items-center space-x-1.5">
               <span>💍</span>
@@ -553,6 +577,7 @@
 
         </div>
 
+        <!-- 5. SERVIS & SILUETA TĚLA -->
         <div class="bg-gray-900/80 p-4 rounded-2xl border border-gray-800 space-y-4">
           <div class="flex items-center justify-between">
             <div>
@@ -587,7 +612,6 @@
             </svg>
           </div>
 
-          <!-- Seznam existujících oprav -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <h4 id="repairHeaderFilterTitle" class="text-xs font-semibold text-gray-300">Historie oprav</h4>
@@ -681,9 +705,6 @@
   </div>
 
   <script>
-    /* ==========================================================================
-       DATABÁZE REÁLNÝCH FOTOGRAFIÍ VE VYSOKÉM ROZLIŠENÍ (UNSPLASH CURATED)
-       ========================================================================== */
     const REAL_PHOTOS = {
       manicures: {
         square: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=800&q=80",
@@ -730,8 +751,71 @@
       return fallback;
     }
 
-    /* PŘEDNASTAVENÉ HODNOTY FORMULÁŘŮ S NOVÝM NÁHRDELNÍKEM */
+    /* PŘEDNASTAVENÉ HODNOTY FORMULÁŘŮ VČETNĚ NOVÝCH BIOGRAFICKÝCH POLÍ */
     const FORM_CONFIG = {
+      identity: {
+        profession: {
+          label: "💼 Povolání",
+          options: [
+            "Modelka",
+            "Módní ikona / Influencerka",
+            "Tanečnice",
+            "Herečka",
+            "Fitness instruktorka",
+            "Podnikatelka",
+            "Zpěvačka / Umělkyně",
+            "Hosteska & VIP společnice",
+            "Sběratelská múza"
+          ]
+        },
+        specialization: {
+          label: "🎯 Specializace",
+          options: [
+            "Módní přehlídky & Runway",
+            "Fotomodeling & Editorial",
+            "Glamour & Spodní prádlo",
+            "Společenské a večerní události",
+            "Fitness & Sportovní focení",
+            "Umělecký akt & Siluety",
+            "Komerční reklama",
+            "VIP Exkluzivní reprezentace"
+          ]
+        },
+        nationality: {
+          label: "🌍 Národnost",
+          options: [
+            "Česká",
+            "Slovenská",
+            "Francouzská",
+            "Italská",
+            "Švédská",
+            "Ukrajinská",
+            "Japonská",
+            "Americká",
+            "Německá",
+            "Španělská"
+          ]
+        },
+        birthDate: {
+          label: "📅 Datum narození",
+          isDateInput: true
+        },
+        birthPlace: {
+          label: "📍 Místo narození",
+          options: [
+            "Praha, Česká republika",
+            "Brno, Česká republika",
+            "Bratislava, Slovensko",
+            "Paříž, Francie",
+            "Milán, Itálie",
+            "Stockholm, Švédsko",
+            "Kyjev, Ukrajina",
+            "Tokio, Japonsko",
+            "New York, USA",
+            "Barcelona, Španělsko"
+          ]
+        }
+      },
       appearance: {
         hairType: { label: "Typ vlasů", options: ["Hladké hedvábné", "Rovné", "Jemné vlny", "Výrazné kudrny", "Afro", "Mikádo / Bob", "Vysoký culík"] },
         hairLength: { label: "Délka vlasů", options: ["Dlouhé (do pasu)", "Polodlouhé (na ramena)", "Krátké", "Extra dlouhé (pod zadek)"] },
@@ -797,13 +881,12 @@
     let db = null;
     let dolls = [];
     let currentDollId = null;
-    let activePartForRepair = "";
     let selectedZoneFilter = null;
     let deferredPrompt = null;
 
     function initIndexedDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open("DollCollectionDB_V5", 5);
+        const req = indexedDB.open("DollCollectionDB_V6", 6);
         req.onupgradeneeded = (e) => {
           const database = e.target.result;
           if (!database.objectStoreNames.contains("dolls")) {
@@ -860,6 +943,13 @@
           nickname: "Monika",
           facePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
           bodyPhoto: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80",
+          identity: {
+            profession: "Modelka",
+            specialization: "Módní přehlídky & Runway",
+            nationality: "Česká",
+            birthDate: "1998-07-19",
+            birthPlace: "Praha, Česká republika"
+          },
           appearance: {
             hairType: "Hladké hedvábné",
             hairLength: "Dlouhé (do pasu)",
@@ -919,6 +1009,9 @@
       const filtered = dolls.filter(d => {
         if (!q) return true;
         return (d.name || "").toLowerCase().includes(q) ||
+               (d.identity?.profession || "").toLowerCase().includes(q) ||
+               (d.identity?.nationality || "").toLowerCase().includes(q) ||
+               (d.identity?.birthPlace || "").toLowerCase().includes(q) ||
                (d.outfit?.clothing || "").toLowerCase().includes(q) ||
                (d.accessories?.necklace || "").toLowerCase().includes(q) ||
                (d.appearance?.nailsColor || "").toLowerCase().includes(q);
@@ -939,11 +1032,11 @@
             ${photoMarkup}
             <div class="space-y-0.5 min-w-0">
               <h3 class="font-bold text-sm text-white">${doll.name}</h3>
-              <p class="text-[11px] text-gray-400">${doll.outfit.clothing || 'Bez popisu'}</p>
+              <p class="text-[11px] text-amber-400 font-medium">${doll.identity?.profession || 'Modelka'} • ${doll.identity?.nationality || 'Česká'}</p>
               <div class="flex items-center space-x-2 text-[10px] text-purple-400">
-                <span>💅 ${doll.appearance.nailsShape || 'Square'}</span>
+                <span>💅 ${doll.appearance?.nailsShape || 'Square'}</span>
                 <span>•</span>
-                <span>👠 ${doll.outfit.shoesColor || 'Bílá'}</span>
+                <span>👠 ${doll.outfit?.shoesColor || 'Bílá'}</span>
               </div>
             </div>
           </div>
@@ -992,6 +1085,13 @@
         nickname: "Panenka " + (dolls.length + 1),
         facePhoto: "",
         bodyPhoto: "",
+        identity: {
+          profession: "Modelka",
+          specialization: "Módní přehlídky & Runway",
+          nationality: "Česká",
+          birthDate: "2000-01-01",
+          birthPlace: "Praha, Česká republika"
+        },
         appearance: {
           hairType: "Hladké hedvábné",
           hairLength: "Dlouhé (do pasu)",
@@ -1054,19 +1154,26 @@
       document.querySelectorAll(".form-item").forEach(container => {
         const cat = container.dataset.category;
         const key = container.dataset.key;
-        const conf = FORM_CONFIG[cat][key];
+        const conf = FORM_CONFIG[cat] ? FORM_CONFIG[cat][key] : null;
         if (!conf) return;
 
-        container.innerHTML = `
-          <label class="block text-[11px] text-gray-400 font-medium mb-1">${conf.label}</label>
-          <div class="space-y-1">
-            <select class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:border-purple-500 outline-none" onchange="handleFieldChange('${cat}', '${key}', this.value)">
-              ${conf.options.map(opt => `<option value="${opt}">${opt}</option>`).join("")}
-              <option value="__custom__">+ Vlastní hodnota...</option>
-            </select>
-            <input type="text" placeholder="Zadejte vlastní..." class="hidden w-full bg-gray-950 border border-purple-800 rounded-lg p-2 text-xs text-white" oninput="handleCustomFieldInput('${cat}', '${key}', this.value)">
-          </div>
-        `;
+        if (conf.isDateInput) {
+          container.innerHTML = `
+            <label class="block text-[11px] text-gray-400 font-medium mb-1">${conf.label}</label>
+            <input type="date" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:border-purple-500 outline-none" onchange="handleFieldChange('${cat}', '${key}', this.value)">
+          `;
+        } else {
+          container.innerHTML = `
+            <label class="block text-[11px] text-gray-400 font-medium mb-1">${conf.label}</label>
+            <div class="space-y-1">
+              <select class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:border-purple-500 outline-none" onchange="handleFieldChange('${cat}', '${key}', this.value)">
+                ${conf.options.map(opt => `<option value="${opt}">${opt}</option>`).join("")}
+                <option value="__custom__">+ Vlastní hodnota...</option>
+              </select>
+              <input type="text" placeholder="Zadejte vlastní..." class="hidden w-full bg-gray-950 border border-purple-800 rounded-lg p-2 text-xs text-white" oninput="handleCustomFieldInput('${cat}', '${key}', this.value)">
+            </div>
+          `;
+        }
       });
     }
 
@@ -1097,18 +1204,29 @@
         const cat = container.dataset.category;
         const key = container.dataset.key;
         const val = (doll[cat] && doll[cat][key]) ? doll[cat][key] : "";
+        const conf = FORM_CONFIG[cat] ? FORM_CONFIG[cat][key] : null;
+
+        if (conf && conf.isDateInput) {
+          const dateInput = container.querySelector("input[type='date']");
+          if (dateInput) dateInput.value = val || "";
+          return;
+        }
+
         const select = container.querySelector("select");
         const customInput = container.querySelector("input[type='text']");
+        if (!select) return;
 
         if (val) {
           const match = Array.from(select.options).some(o => o.value === val);
           if (match) {
             select.value = val;
-            customInput.classList.add("hidden");
+            if (customInput) customInput.classList.add("hidden");
           } else {
             select.value = "__custom__";
-            customInput.value = val;
-            customInput.classList.remove("hidden");
+            if (customInput) {
+              customInput.value = val;
+              customInput.classList.remove("hidden");
+            }
           }
         }
       });
@@ -1119,15 +1237,17 @@
       if (!doll) return;
 
       const container = document.querySelector(`.form-item[data-category="${cat}"][data-key="${key}"]`);
-      const customInput = container.querySelector("input[type='text']");
+      const customInput = container ? container.querySelector("input[type='text']") : null;
 
       doll[cat] = doll[cat] || {};
 
       if (val === "__custom__") {
-        customInput.classList.remove("hidden");
-        customInput.focus();
+        if (customInput) {
+          customInput.classList.remove("hidden");
+          customInput.focus();
+        }
       } else {
-        customInput.classList.add("hidden");
+        if (customInput) customInput.classList.add("hidden");
         doll[cat][key] = val;
         saveDollToDB(doll);
         updateVisuals(doll);
@@ -1161,14 +1281,33 @@
       reader.readAsDataURL(file);
     }
 
+    function formatDateDisplay(dateStr) {
+      if (!dateStr) return "";
+      try {
+        const parts = dateStr.split("-");
+        if (parts.length === 3) {
+          return `${parseInt(parts[2], 10)}. ${parseInt(parts[1], 10)}. ${parts[0]}`;
+        }
+      } catch (e) {}
+      return dateStr;
+    }
+
     function updateVisuals(doll) {
       // 1. Texty na kartě v plném znění
       document.getElementById("cardHeaderName").innerText = `PROFILOVÁ KARTA - ${(doll.name || 'PANENKA').toUpperCase()}`;
       document.getElementById("cardSignatureName").innerText = doll.nickname || doll.name || "Panenka";
       document.getElementById("cardBlockName").innerText = (doll.name || 'PANENKA').toUpperCase();
       document.getElementById("cardValNickname").innerText = doll.nickname || doll.name.split(" ")[0] || "Nezadáno";
-      document.getElementById("cardValClothingHeader").innerText = doll.outfit?.clothing || "Standardní";
-      document.getElementById("cardValHairHeader").innerText = [doll.appearance?.hairType, doll.appearance?.hairColor].filter(Boolean).join(" • ");
+
+      // 2. BIOGRAFIE A IDENTITA
+      document.getElementById("cardValProfession").innerText = doll.identity?.profession || "Modelka";
+      document.getElementById("cardValSpecialization").innerText = doll.identity?.specialization || "Módní přehlídky & Runway";
+      document.getElementById("cardValNationality").innerText = doll.identity?.nationality || "Česká";
+
+      const formattedDate = formatDateDisplay(doll.identity?.birthDate);
+      const birthPlace = doll.identity?.birthPlace || "";
+      const datePlaceCombined = [formattedDate, birthPlace].filter(Boolean).join(", ") || "Neuvedeno";
+      document.getElementById("cardValBirthDatePlace").innerText = datePlaceCombined;
 
       // Fotka obličeje a postavy na kartě
       const cardFaceImg = document.getElementById("cardFacePhoto");
@@ -1185,7 +1324,7 @@
       const bodyImgPreview = document.getElementById("cardBodyPhotoPreview");
       bodyImgPreview.src = doll.bodyPhoto || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80";
 
-      // 2. SKUTEČNÁ FOTKA MANIKÚRY NA RUKOU
+      // 3. SKUTEČNÁ FOTKA MANIKÚRY NA RUKOU
       const nailShape = (doll.appearance?.nailsShape || "").toLowerCase();
       const nailStyle = (doll.appearance?.nailsStyle || "").toLowerCase();
 
@@ -1212,7 +1351,7 @@
       document.getElementById("cardValNailColor").innerText = doll.appearance?.nailsColor || "Červená";
       document.getElementById("cardValNailLength").innerText = doll.appearance?.nailsLength || "Střední";
 
-      // 3. SKUTEČNÁ FOTKA OBUVI & PEDIKÚRA
+      // 4. SKUTEČNÁ FOTKA OBUVI & PEDIKÚRA
       const shoeType = (doll.outfit?.shoesType || "").toLowerCase();
       let footwearPhotoUrl = REAL_PHOTOS.footwear.sandals_strappy_stiletto;
 
@@ -1262,7 +1401,7 @@
       document.getElementById("cardValUnderwear").innerText = doll.outfit?.underwear || "Žádné / Bez prádla";
       document.getElementById("cardValHeadwear").innerText = doll.outfit?.headwear || "Žádná";
 
-      // Šperky & Nový Náhrdelník
+      // Šperky & Náhrdelník
       document.getElementById("cardValNecklace").innerText = doll.accessories?.necklace || "Žádný";
       document.getElementById("cardValEarrings").innerText = doll.accessories?.earrings || "Žádné";
       document.getElementById("cardValRings").innerText = doll.accessories?.rings || "Žádné";
@@ -1494,4 +1633,18 @@
   </script>
 </body>
 </html>
+```
+
+### Přidané novinky:
+1. **Sekce Biografie & Identita v úpravách:**
+   - **Povolání** (Modelka, Módní ikona, Tanečnice, Herečka, Fitness instruktorka, Podnikatelka, Zpěvačka, VIP společnice + vlastní).
+   - **Specializace** (Módní přehlídky & Runway, Fotomodeling, Glamour & Spodní prádlo, Společenské události + vlastní).
+   - **Národnost** (Česká, Slovenská, Francouzská, Italská, Švédská, Ukrajinská, Japonská, Americká + vlastní).
+   - **Datum narození** (interaktivní kalendářový výběr).
+   - **Místo narození** (Praha, Brno, Bratislava, Paříž, Milán, New York + libovolné vlastní město).
+2. **Přímé zobrazení na Sběratelské Profilové Kartě:**
+   - Všechny tyto údaje jsou nyní přímo na kartě v horní části u jména, přezdívky a portrétu.
+   - Texty se nikde neořezávají a jsou čitelné v plném znění.
+3. **Uložení do GitHubu:**
+   - V repozitáři na GitHubu otevři soubor `index.html`, klikni na tři tečky `···` -> **Edit file**, nahraď starý kód tímto novým a klikni na **Commit changes**. Během 1–2 minut se ti aktualizuje i aplikace v mobilu.
 ```
