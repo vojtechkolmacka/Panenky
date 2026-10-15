@@ -111,8 +111,9 @@
       </div>
     </div>
     <div class="flex items-center space-x-2">
-      <button onclick="openExportModal()" class="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition" title="Záloha dat">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+      <button onclick="openBackupCenterModal()" class="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-purple-300 hover:text-white rounded-lg border border-gray-700 text-xs font-semibold flex items-center space-x-1.5 shadow" title="Záloha a obnova dat">
+        <span>💾</span>
+        <span>Záloha & Obnova</span>
       </button>
     </div>
   </header>
@@ -383,9 +384,8 @@
             </div>
           </div>
 
-          <!-- DETAILNÍ BOXY SE VŠEMI HODNOTAMI -->
+          <!-- DETAILNÍ BOXY -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-            <!-- Vlasy & Účes -->
             <div class="card-box p-3 space-y-1">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">💇‍♀️</span>
@@ -398,7 +398,6 @@
               </div>
             </div>
 
-            <!-- Make-up & Líčení -->
             <div class="card-box p-3 space-y-1">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">💄</span>
@@ -412,7 +411,6 @@
               </div>
             </div>
 
-            <!-- Manikúra s reálnou fotkou -->
             <div class="card-box p-3 space-y-2">
               <div class="flex items-center justify-between border-b border-[#80182a]/30 pb-1">
                 <div class="flex items-center space-x-1.5">
@@ -436,7 +434,6 @@
               </div>
             </div>
 
-            <!-- Pedikúra -->
             <div class="card-box p-3 space-y-1.5">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">🦶</span>
@@ -451,7 +448,6 @@
               </div>
             </div>
 
-            <!-- Obuv s reálnou fotkou -->
             <div class="card-box p-3 space-y-2 sm:col-span-2">
               <div class="flex items-center justify-between border-b border-[#80182a]/30 pb-1">
                 <div class="flex items-center space-x-1.5">
@@ -475,7 +471,6 @@
               </div>
             </div>
 
-            <!-- Spodní prádlo -->
             <div class="card-box p-3 space-y-1">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">🛡️</span>
@@ -486,7 +481,6 @@
               </div>
             </div>
 
-            <!-- Intimní úprava -->
             <div class="card-box p-3 space-y-1">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">👙</span>
@@ -497,7 +491,6 @@
               </div>
             </div>
 
-            <!-- Šperky & Náhrdelníky -->
             <div class="card-box p-3 space-y-1 sm:col-span-2">
               <div class="flex items-center space-x-1.5 border-b border-[#80182a]/30 pb-1">
                 <span class="text-base">💎</span>
@@ -513,7 +506,6 @@
             </div>
           </div>
 
-          <!-- Stav servisu -->
           <div class="card-box p-3 mt-3 flex items-center space-x-3">
             <div class="w-10 h-10 rounded-full bg-[#80182a] flex items-center justify-center text-white shrink-0 shadow">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
@@ -531,6 +523,50 @@
       </div>
     </div>
   </main>
+
+  <!-- MODÁLNÍ DIALOG: CENTRUM ZÁLOHOVÁNÍ & OBNOVENÍ DAT -->
+  <div id="backupModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-gray-900 border border-purple-900/60 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+        <h3 class="font-bold text-sm text-purple-300 flex items-center space-x-1.5">
+          <span>💾</span>
+          <span>Centrum zálohy & Obnovení</span>
+        </h3>
+        <button onclick="closeBackupCenterModal()" class="text-gray-400 hover:text-white text-lg font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <!-- 1. EXPORT -->
+        <div class="p-3 bg-gray-950 border border-gray-800 rounded-xl space-y-2">
+          <div class="font-bold text-gray-200 flex items-center space-x-1.5">
+            <span>📤</span>
+            <span>Uložit zálohu (Export)</span>
+          </div>
+          <p class="text-gray-400 text-[11px]">Stáhne do mobilu soubor `.json` se všemi panenkami, fotkami, oblečením i kompletní historií oprav.</p>
+          <button onclick="executeExportBackup()" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold shadow">
+            Stáhnout zálohu do telefonu
+          </button>
+        </div>
+
+        <!-- 2. IMPORT -->
+        <div class="p-3 bg-gray-950 border border-gray-800 rounded-xl space-y-2">
+          <div class="font-bold text-gray-200 flex items-center space-x-1.5">
+            <span>📥</span>
+            <span>Načíst zálohu (Obnovení)</span>
+          </div>
+          <p class="text-gray-400 text-[11px]">Vyberte dříve stažený soubor `.json` ze svého telefonu a obnovte kompletní sbírku.</p>
+          <label class="block w-full py-2 bg-gray-800 hover:bg-gray-700 text-purple-300 hover:text-white text-center rounded-lg font-semibold border border-purple-500/30 cursor-pointer shadow">
+            <span>Vybrat soubor zálohy...</span>
+            <input type="file" id="importFileInput" accept=".json,application/json" class="hidden" onchange="handleImportBackupFile(event)">
+          </label>
+        </div>
+      </div>
+
+      <div class="pt-1">
+        <button onclick="closeBackupCenterModal()" class="w-full py-2 bg-gray-800 text-gray-300 rounded-xl text-xs font-semibold">Zavřít</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODÁLNÍ DIALOG: PŘIDAT/UPRAVIT OPRAVU -->
   <div id="repairModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
@@ -761,6 +797,16 @@
         const tx = db.transaction("dolls", "readwrite");
         const store = tx.objectStore("dolls");
         const req = store.put(doll);
+        req.onsuccess = () => resolve();
+        req.onerror = (e) => reject(e);
+      });
+    }
+
+    async function clearAllDollsInDB() {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("dolls", "readwrite");
+        const store = tx.objectStore("dolls");
+        const req = store.clear();
         req.onsuccess = () => resolve();
         req.onerror = (e) => reject(e);
       });
@@ -1190,7 +1236,6 @@
         cardFacePlace.classList.remove("hidden");
       }
 
-      // Stav servisu a zvýraznění částí těla
       const activeLeaks = (doll.repairs || []).filter(r => r.status === 'Velký únik' || r.status === 'Malý únik');
       const inProgress = (doll.repairs || []).filter(r => r.status === 'Probíhá oprava' || r.status === 'Sledování');
       const statusElement = document.getElementById("cardHealthStatus");
@@ -1249,7 +1294,7 @@
         return;
       }
 
-      doll.repairs.slice().reverse().forEach((rep, index) => {
+      doll.repairs.slice().reverse().forEach((rep) => {
         const item = document.createElement("div");
         item.className = "bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs space-y-1.5 shadow";
         const badgeClass = getStatusBadgeStyle(rep.status);
@@ -1400,7 +1445,20 @@
       showToast("Panenka smazána");
     }
 
-    function openExportModal() {
+    /* CENTRUM ZÁLOHY & OBNOVY DAT */
+    function openBackupCenterModal() {
+      document.getElementById("backupModal").classList.remove("hidden");
+    }
+
+    function closeBackupCenterModal() {
+      document.getElementById("backupModal").classList.add("hidden");
+    }
+
+    function executeExportBackup() {
+      if (!dolls || dolls.length === 0) {
+        showToast("Nemáte žádné panenky k zálohování", true);
+        return;
+      }
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dolls, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
@@ -1408,6 +1466,41 @@
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+      showToast("Záloha stažena do telefonu!");
+      closeBackupCenterModal();
+    }
+
+    function handleImportBackupFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const parsedData = JSON.parse(e.target.result);
+          if (!Array.isArray(parsedData)) {
+            showToast("Neplatný formát záložního souboru", true);
+            return;
+          }
+
+          if (confirm(`Chcete obnovit sbírku ze zálohy? Bude nahráno ${parsedData.length} panenek.`)) {
+            await clearAllDollsInDB();
+            for (const item of parsedData) {
+              await saveDollToDB(item);
+            }
+            dolls = parsedData;
+            closeBackupCenterModal();
+            showDollList();
+            showToast(`Úspěšně obnoveno ${parsedData.length} panenek!`);
+          }
+        } catch (err) {
+          console.error("Chyba při importu zálohy:", err);
+          showToast("Chyba: Soubor není platný JSON", true);
+        } finally {
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file);
     }
   </script>
 </body>
